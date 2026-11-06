@@ -40,3 +40,51 @@ jobs:
           name: function
           path: site/dist/function.zip
           retention-days: 7
+
+  # The function of a build of main, with the role of the environment
+  # production, which takes main only and waits for no approval, as the code
+  # on main comes through pull requests. Two deployments never run at once.
+  deploy:
+    name: Deploy
+
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+
+    environment:
+      name: production
+      url: https://pyjoyment.dev
+
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+
+    runs-on: ubuntu-26.04-arm
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up mise
+        uses: jdx/mise-action@v5
+        with:
+          version: 2026.11.0 # datasource=github-releases depName=jdx/mise
+
+      - name: Download the function
+        uses: actions/download-artifact@v8
+        with:
+          name: function
+          path: site/dist
+
+      - name: Credentials of AWS
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::959435416781:role/pyjoyment-dev-deploy
+          aws-region: us-east-1
+
+      - name: Deploy
+        run: uv run --project site python deploy.py --distribution E3L54LJQ60FS5U site/dist/function.zip

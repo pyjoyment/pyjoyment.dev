@@ -49,4 +49,8 @@ locals {
   repository = "pyjoyment/pyjoyment.dev"
   domain     = "pyjoyment.dev"
   name       = "pyjoyment-dev"
+
+  # The immutable subject of the OIDC tokens of the repository, with the IDs of its owner and of itself, as
+  # sub_claim_prefix of `gh api repos/pyjoyment/pyjoyment.dev/actions/oidc/customization/sub` gives it
+  subject = "repo:pyjoyment@351424207/pyjoyment.dev@1448381496"
 }

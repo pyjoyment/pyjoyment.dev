@@ -19,6 +19,8 @@ to this one, `../Pyjoyment/AGENTS.md`.
   configuration of the linters and the infrastructure are outside of it.
 - `t/`: the tests.
 - `tofu/`: the infrastructure.
+- `deploy.py`: the deployment of the function, outside of `site/`, so that it
+  is not in the function.
 
 The configuration of ruff and pyright is in the root of the repository, in
 `ruff.toml` and `pyrightconfig.json`, for `site/` and `t/` alike: ruff skips a
@@ -61,18 +63,52 @@ mise exec -- uv run --directory site python app.py generate lambda-zip --arch ar
 ```
 
 The runtime, `python3.15`, and the architecture, `arm64`, are the same in the
-workflow and in `tofu/`. The layer is the alias of the latest Pyjoyment of the
-index of the latest release of the layers, `pyjoyment-python3_15`, and the
-generator tells the version of Pyjoyment of `uv.lock`, which is the one of the
-layer as long as both are of the latest release.
+workflow and in `tofu/`. The generator tells the version of Pyjoyment of
+`uv.lock`, whose layer the deployment gives the function.
+
+## Deployment
+
+The job Deploy of the workflow Build deploys the build of a push to `main`,
+or of a dispatch on `main`, with `deploy.py`, in the environment `production`,
+which takes `main` only and waits for no approval, as the code on `main` comes
+through pull requests:
+
+```sh
+AWS_PROFILE=<profile> mise exec -- uv run --project site python deploy.py --distribution E3L54LJQ60FS5U site/dist/function.zip
+```
+
+`deploy.py` calls the APIs of AWS with `Pyjo.AWS.Client` of Pyjo-AWS, as
+Pyjoyment-Lambda-Layers does, instead of the AWS CLI: it is the dependency of
+the group `dev` of `site/`, which `uv export --no-dev` of
+`generate lambda-zip` leaves out of the function, whose layer of Pyjoyment has
+a Pyjo-AWS of its own. It takes the credentials that the AWS CLI finds, of the
+environment, which `aws-actions/configure-aws-credentials` sets, or of a
+profile.
+
+It gives the function the layer of the Pyjoyment of `uv.lock`, by its name in
+the index of the latest release of Pyjoyment-Lambda-Layers, as
+`pyjoyment-0_3_0-python3_15` for the runtime of the function, not the alias of
+the latest Pyjoyment, `pyjoyment-python3_15`, which the first apply of
+`tofu/` takes: a bump of Pyjoyment in `uv.lock` before its layers are released
+fails the deployment, instead of running the application on another
+Pyjoyment. The index has the layers of its release only, so a `uv.lock` of an
+older Pyjoyment fails too. The layer goes before the code, as the code of a
+newer Pyjoyment needs its layer, where a newer layer runs the code of the one
+before, and each update waits until `LastUpdateStatus` of the function is
+`Successful`, as Lambda takes no other update before.
+
+The deployment invalidates `/*` of the distribution at last, the files of
+`public/` that CloudFront keeps for an hour, which is one path of the free
+thousand of a month.
 
 ## The Infrastructure
 
 `tofu/` is the infrastructure of the account `959435416781`, in `us-east-1`,
 as CloudFront takes its certificate from there only: the function, its role
 and its log group, its Function URL, the CloudFront distribution with its
-origin access control and its cache policy, the certificate of ACM, and the
-records of `pyjoyment.dev` in Cloudflare, which has the zone. It is applied by
+origin access control and its cache policy, the certificate of ACM, the role
+of the deployment, and the records of `pyjoyment.dev` in Cloudflare, which has
+the zone. It is applied by
 hand, never by CI, with the credentials of `AWS_PROFILE`, and
 `allowed_account_ids` of the provider stops a profile of another account
 before it changes anything:
@@ -110,7 +146,19 @@ plan needs no build and does not take a deployment back.
 
 A document of a policy takes no attribute of another resource, as in
 Pyjoyment-Lambda-Layers: such a value is unknown until the apply, and the plan
-shows the document as `(known after apply)` instead of its statements.
+shows the document as `(known after apply)` instead of its statements. The
+documents build the ARNs from the account and the name of the function
+instead, and the role of the deployment invalidates every distribution of the
+account, which has this one only, as the ID of a distribution is unknown until
+it is created.
+
+The role `pyjoyment-dev-deploy` of the deployment is assumed by the jobs of
+the environment `production` of this repository only, with the immutable
+subject of its OIDC tokens, with the IDs of its owner and of itself,
+`repo:pyjoyment@351424207/pyjoyment.dev@1448381496`, so that a repository of
+the same name made anew does not get the role. The OIDC provider of GitHub is
+the one of the account, of Pyjoyment-Lambda-Layers, which manages it, as an
+account has one provider of a URL.
 
 ## Tests
 

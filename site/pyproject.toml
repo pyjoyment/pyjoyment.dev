@@ -11,3 +11,8 @@ dependencies = ["Pyjoyment>=0.3.0"]
 # files of this directory
 [tool.uv]
 package = false
+
+# The Pyjo-AWS of deploy.py, which "uv export --no-dev" of "generate lambda-zip" leaves out of the function, whose
+# layer of Pyjoyment has one of its own
+[dependency-groups]
+dev = ["Pyjo-AWS>=0.1.0"]
