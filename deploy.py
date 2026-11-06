@@ -14,11 +14,13 @@ profile of ``AWS_PROFILE``.
 """
 
 import Pyjo.AWS.Client
+import Pyjo.AWS.Protocol.Query
 import Pyjo.AWS.Protocol.RestJSON
 import Pyjo.AWS.Protocol.RestXML
 import Pyjo.DOM
 import Pyjo.Exception
 import Pyjo.File
+import Pyjo.Log
 import Pyjo.UserAgent
 
 from Pyjo.Util import b64_encode, getopt
@@ -79,10 +81,17 @@ def main(args: list[str]) -> None:
         sys.exit(__doc__)
     function = opts.function or 'pyjoyment-dev'
     path = Pyjo.File.new(args[0])
+    log = Pyjo.Log.new()
 
     # layers.json is behind a redirection of GitHub
     ua = Pyjo.UserAgent.new(max_redirects=3)
     aws = Pyjo.AWS.Client.new(service='lambda', region=REGION, ua=ua)
+
+    # The identity first, so that the log shows the account and the role of the deployment; the clients share the
+    # credentials, so that those of a profile are read once
+    sts = Pyjo.AWS.Client.new(service='sts', region=REGION, credentials=aws.credentials, ua=ua)
+    dom = sts.call(Pyjo.AWS.Protocol.Query.new('GetCallerIdentity', version='2011-06-15'))
+    log.info(f'[identity] {dom.at("Account").text} {dom.at("Arn").text}')
 
     config = configuration(aws, function)
     arn = layer(ua, config['Runtime'])
@@ -94,24 +103,28 @@ def main(args: list[str]) -> None:
         )
         aws.call(call)
         updated(aws, function)
-        print(f'[layer] {function} {arn}')
+        log.info(f'[layer] {function} {arn}')
 
     call = Pyjo.AWS.Protocol.RestJSON.new(
         'PUT', f'/2015-03-31/functions/{function}/code', json={'ZipFile': b64_encode(path.slurp(), '')}
     )
     aws.call(call)
     config = updated(aws, function)
-    print(f'[code] {function} {config["CodeSha256"]}')
+    log.info(f'[code] {function} {config["CodeSha256"]}')
 
     # The files of public/ that CloudFront keeps for an hour; the wildcard is one path of the free thousand of a month
     if opts.distribution:
         cloudfront = Pyjo.AWS.Client.new(
-            service='cloudfront', endpoint='https://cloudfront.amazonaws.com', region=REGION, ua=ua
+            service='cloudfront',
+            endpoint='https://cloudfront.amazonaws.com',
+            region=REGION,
+            credentials=aws.credentials,
+            ua=ua,
         )
         body = invalidation(config['RevisionId']).to_str()
         call = Pyjo.AWS.Protocol.RestXML.new('POST', f'/2020-05-31/distribution/{opts.distribution}/invalidation', body)
         dom = cloudfront.call(call)
-        print(f'[invalidation] {opts.distribution} {dom.at("Invalidation > Id").text}')
+        log.info(f'[invalidation] {opts.distribution} {dom.at("Invalidation > Id").text}')
 
 
 if __name__ == '__main__':
