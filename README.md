@@ -1,4 +1,4 @@
-[![Home](https://img.shields.io/badge/%F0%9F%8F%A0-Pyjoyment-02a7a0)](https://github.com/pyjoyment/Pyjoyment)
+[![Home](https://img.shields.io/badge/%F0%9F%8F%A0-Pyjoyment-02a7a0)](https://pyjoyment.dev/)
 [![License](https://img.shields.io/github/license/pyjoyment/pyjoyment.dev.svg)](https://github.com/pyjoyment/pyjoyment.dev/blob/main/LICENSE)
 [![Tests](https://github.com/pyjoyment/pyjoyment.dev/actions/workflows/tests.yaml/badge.svg?branch=main)](https://github.com/pyjoyment/pyjoyment.dev/actions/workflows/tests.yaml)
 [![Trunk Check](https://github.com/pyjoyment/pyjoyment.dev/actions/workflows/trunk-check.yaml/badge.svg?branch=main)](https://github.com/pyjoyment/pyjoyment.dev/actions/workflows/trunk-check.yaml)
