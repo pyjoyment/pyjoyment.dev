@@ -35,6 +35,15 @@ alone, for the public layer of Pyjoyment of
 uv run --directory site python app.py generate lambda-zip --arch arm64 --runtime python3.15 --function-only
 ```
 
+## Deployment
+
+A push to `main` builds the function and deploys it, with the role of the
+environment `production`. `deploy.py` deploys a build by hand too:
+
+```sh
+AWS_PROFILE=<profile> uv run --project site python deploy.py --distribution E3L54LJQ60FS5U site/dist/function.zip
+```
+
 ## Infrastructure
 
 `tofu/` creates the function, its Function URL, the CloudFront distribution,
