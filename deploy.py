@@ -16,6 +16,7 @@ profile of ``AWS_PROFILE``.
 import Pyjo.AWS.Client
 import Pyjo.AWS.Protocol.RestJSON
 import Pyjo.AWS.Protocol.RestXML
+import Pyjo.DOM
 import Pyjo.Exception
 import Pyjo.File
 import Pyjo.UserAgent
@@ -61,13 +62,16 @@ def layer(ua: Pyjo.UserAgent.object, runtime: str) -> str:
     return arn
 
 
-def invalidation(reference: str) -> str:
-    return f"""<?xml version="1.0" encoding="UTF-8"?>
-<InvalidationBatch xmlns="http://cloudfront.amazonaws.com/doc/2020-05-31/">
-  <Paths><Quantity>1</Quantity><Items><Path>/*</Path></Items></Paths>
-  <CallerReference>{reference}</CallerReference>
-</InvalidationBatch>
-"""
+# The XML of the batch, with the elements of new_tag, which escapes their text, in XML, which keeps the case of their
+# names
+def invalidation(reference: str) -> Pyjo.DOM.object:
+    dom = Pyjo.DOM.new()
+    dom.xml = True
+    tag = dom.new_tag
+    items = tag('Items').at('Items').append_content(tag('Path', '/*')).root
+    paths = tag('Paths').at('Paths').append_content(tag('Quantity', '1')).append_content(items).root
+    batch = tag('InvalidationBatch', xmlns='http://cloudfront.amazonaws.com/doc/2020-05-31/').at('InvalidationBatch')
+    return batch.append_content(paths).append_content(tag('CallerReference', reference)).root
 
 
 def main(args: list[str]) -> None:
@@ -104,7 +108,7 @@ def main(args: list[str]) -> None:
         cloudfront = Pyjo.AWS.Client.new(
             service='cloudfront', endpoint='https://cloudfront.amazonaws.com', region=REGION, ua=ua
         )
-        body = invalidation(config['RevisionId'])
+        body = invalidation(config['RevisionId']).to_str()
         call = Pyjo.AWS.Protocol.RestXML.new('POST', f'/2020-05-31/distribution/{opts.distribution}/invalidation', body)
         dom = cloudfront.call(call)
         print(f'[invalidation] {opts.distribution} {dom.at("Invalidation > Id").text}')
