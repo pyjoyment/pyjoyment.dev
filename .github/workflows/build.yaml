@@ -28,7 +28,7 @@ jobs:
       - name: Set up mise
         uses: jdx/mise-action@v5
         with:
-          version: 2026.11.0 # datasource=github-releases depName=jdx/mise
+          version: 2026.11.2 # datasource=github-releases depName=jdx/mise
 
       - name: Build the function
         working-directory: site
@@ -72,7 +72,7 @@ jobs:
       - name: Set up mise
         uses: jdx/mise-action@v5
         with:
-          version: 2026.11.0 # datasource=github-releases depName=jdx/mise
+          version: 2026.11.2 # datasource=github-releases depName=jdx/mise
 
       - name: Download the function
         uses: actions/download-artifact@v8
