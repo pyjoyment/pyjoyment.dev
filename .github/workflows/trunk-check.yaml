@@ -1,0 +1,45 @@
+name: Trunk Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "*"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  trunk:
+    name: Trunk Check
+
+    runs-on: ubuntu-26.04-arm
+    timeout-minutes: 15
+
+    env:
+      DO_NOT_TRACK: "1"
+      # tflint --init downloads its plugins from the releases of GitHub, whose
+      # API limits the requests without a token of the address of a runner
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up mise
+        uses: jdx/mise-action@v5
+        with:
+          version: 2026.11.0 # datasource=github-releases depName=jdx/mise
+
+      # The environment of uv sync of site/, with Pyjoyment, for pyright, as
+      # pyrightconfig.json says.
+      - name: Install
+        run: uv sync --project site
+
+      - name: Trunk Check
+        uses: trunk-io/trunk-action@v2.0.0
+        with:
+          check-mode: all

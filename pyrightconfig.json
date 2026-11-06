@@ -1,0 +1,5 @@
+{
+  "venvPath": "site",
+  "venv": ".venv",
+  "typeCheckingMode": "off"
+}

@@ -1,0 +1,13 @@
+[project]
+name = "pyjoyment-dev"
+version = "0"
+description = "The website of Pyjoyment, pyjoyment.dev."
+requires-python = ">=3.12"
+# The Pyjoyment of the tests and of the build, whose version the public layer of the function is to have, which Renovate
+# bumps in uv.lock
+dependencies = ["Pyjoyment>=0.3.0"]
+
+# Not a package: the application is the script app.py, which "generate lambda-zip" puts into the function with the other
+# files of this directory
+[tool.uv]
+package = false

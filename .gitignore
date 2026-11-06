@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# The ZIP files of the function, which "generate lambda-zip" writes
+dist/
+
+# Virtual environments of uv
+.venv
+.venv-*
+
+# Caches of the tools
+.ruff_cache/
+
+# The working directory of OpenTofu and its states; the lock of the providers
+# is committed
+.terraform/
+*.tfstate
+*.tfstate.*
+tfplan
+
+# The override of the backend of the first apply of a new account, with a local
+# state
+*_override.tf
+
+# Logs, as tf.log of the wrapper tf of OpenTofu
+*.log
+
+# Secrets, as in the rules of .claude/settings.json
+*.tfvars
+.env
+.env.*
+.envrc
+.pypirc
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+
+# macOS
+.DS_Store

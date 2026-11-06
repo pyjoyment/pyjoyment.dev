@@ -1,0 +1,193 @@
+# Agent Guide: pyjoyment.dev
+
+## Overview
+
+The repository is the website of Pyjoyment, `pyjoyment.dev`: an application
+of Pyjoyment, its static files and its dynamic pages, which runs as an event
+function of AWS Lambda behind CloudFront, and the OpenTofu of its
+infrastructure. It is not a distribution: it installs nothing of its own. The
+conventions are those of Pyjoyment: read its `AGENTS.md` in the checkout next
+to this one, `../Pyjoyment/AGENTS.md`.
+
+## Layout
+
+- `site/`: the application, and only the application, as
+  `generate lambda-zip` puts every file of the current directory into
+  `function.zip`, but the hidden ones, `__pycache__` and `dist`. It is a
+  project of uv of its own, with `pyproject.toml` and `uv.lock`, which the
+  generator reads in the directory of the application, so the tests, the
+  configuration of the linters and the infrastructure are outside of it.
+- `t/`: the tests.
+- `tofu/`: the infrastructure.
+
+The configuration of ruff and pyright is in the root of the repository, in
+`ruff.toml` and `pyrightconfig.json`, for `site/` and `t/` alike: ruff skips a
+`pyproject.toml` without `[tool.ruff]`, as the one of `site/`, and
+`pyrightconfig.json` names the environment of `uv sync` of `site/`. The
+commands of uv take the project of `site/` with `--project site` from the root,
+or run in `site/`.
+
+## The Application
+
+`site/app.py` is a script of `Pyjoyment.Lite`, whose last line,
+`handler = app.start()`, is the handler `app.handler` of the function and runs
+the command of its arguments otherwise, as `daemon`.
+
+CloudFront caches what the application says with `Cache-Control`, and nothing
+else: the hook `after_static` gives the files of `public/` an hour, and a
+response of an action without the header is not cached. A deployment of new
+static files is seen after that hour, or after an invalidation of the
+distribution.
+
+The function gets the requests with the host of its Function URL, not
+`pyjoyment.dev`, as the Function URL takes the requests of its own host only,
+so the application makes relative URLs, as `url_for` does by default, and not
+absolute ones of the host of the request.
+
+The distribution takes `GET`, `HEAD` and `OPTIONS` only. The origin access
+control of a Function URL takes a request with a body only with the SHA-256
+of the body in `x-amz-content-sha256`, which the client computes, so a form or
+an API that posts needs another way before the distribution takes `POST`.
+
+## Building
+
+`generate lambda-zip --function-only` writes `site/dist/function.zip`, the
+application without Pyjoyment, for the runtime of Python of Lambda and the
+public layer of Pyjoyment of Pyjoyment-Lambda-Layers, as the workflow Build
+does:
+
+```sh
+mise exec -- uv run --directory site python app.py generate lambda-zip --arch arm64 --runtime python3.15 --function-only
+```
+
+The runtime, `python3.15`, and the architecture, `arm64`, are the same in the
+workflow and in `tofu/`. The layer is the alias of the latest Pyjoyment of the
+index of the latest release of the layers, `pyjoyment-python3_15`, and the
+generator tells the version of Pyjoyment of `uv.lock`, which is the one of the
+layer as long as both are of the latest release.
+
+## The Infrastructure
+
+`tofu/` is the infrastructure of the account `959435416781`, in `us-east-1`,
+as CloudFront takes its certificate from there only: the function, its role
+and its log group, its Function URL, the CloudFront distribution with its
+origin access control and its cache policy, the certificate of ACM, and the
+records of `pyjoyment.dev` in Cloudflare, which has the zone. It is applied by
+hand, never by CI, with the credentials of `AWS_PROFILE`, and
+`allowed_account_ids` of the provider stops a profile of another account
+before it changes anything:
+
+```sh
+cd tofu
+AWS_PROFILE=<profile> mise exec -- tofu init
+AWS_PROFILE=<profile> mise exec -- tofu plan -out=tfplan
+AWS_PROFILE=<profile> mise exec -- tofu apply tfplan
+```
+
+The state is in the bucket of the state of Pyjoyment-Lambda-Layers,
+`pyjoyment-tofu-state-959435416781`, under the key
+`pyjoyment.dev/terraform.tfstate`.
+
+The token of the API of Cloudflare is the variable `cloudflare_api_token` in
+`tofu/terraform.tfvars`, which git ignores. It has `Zone:Read`, for the lookup
+of the zone, and `Zone:DNS:Edit`, for its records, of the zone `pyjoyment.dev`
+only. The records point at CloudFront without the proxy of Cloudflare, as the
+distribution is the CDN, and the one of the apex is a CNAME, which Cloudflare
+flattens.
+
+The Function URL has `authorization_type = "AWS_IAM"` and takes only the
+requests that the distribution signs with its origin access control, which
+the function allows with both actions that a Function URL needs,
+`lambda:InvokeFunctionUrl` and `lambda:InvokeFunction` of the Function URL, for
+the ARN of the distribution only, so nobody passes by the distribution. The
+origin request policy is the managed one of all the headers of the viewer but
+`Host`, which the Function URL needs to be its own.
+
+The configuration creates the function with the first build of
+`site/dist/function.zip`. A deployment of the application changes the code and
+the layer of the function outside of OpenTofu, which ignores them, so that a
+plan needs no build and does not take a deployment back.
+
+A document of a policy takes no attribute of another resource, as in
+Pyjoyment-Lambda-Layers: such a value is unknown until the apply, and the plan
+shows the document as `(known after apply)` instead of its statements.
+
+## Tests
+
+The tests are scripts of `Pyjo.Test` in `t`, which `Pyjo.Prove` runs, on the
+reactor of asyncio and on the one of poll, in the development mode of Python,
+as the workflow Tests does:
+
+```sh
+PYTHONDEVMODE=1 mise exec -- uv run --project site python -m Pyjo.Prove -l --capture-stderr -r t
+PYJO_REACTOR=Pyjo.Reactor.Poll PYTHONDEVMODE=1 mise exec -- uv run --project site python -m Pyjo.Prove -l --capture-stderr -r t
+```
+
+`t/site.py` runs the application as a server, and as the function with the
+events of a Function URL, with `Pyjo.App.Lambda`, as Lambda runs it.
+
+## Development
+
+```sh
+mise install
+mise exec -- uv sync --project site
+```
+
+Trunk checks the files with the linters of Pyjoyment, from
+`.trunk/trunk.yaml`:
+
+```sh
+trunk check --all --no-fix
+```
+
+actionlint is the one of the maintained fork kjanat/actionlint, as in
+Pyjoyment: `downloads` in `.trunk/trunk.yaml` replaces the URLs of the plugin
+with those of the fork, whose files have the same names.
+
+Biome formats and lints CSS, HTML, JSON, Markdown and YAML, with
+`biome.jsonc`, and yamllint checks what Biome does not, as the duplicated
+keys. The version of Biome is the pinned one of `.trunk/trunk.yaml`, where `!`
+keeps it from `trunk upgrade`, and which Renovate bumps: the repository has no
+`package.json`. The workflow Biome Migrate migrates `biome.jsonc` and formats
+the files on the branch of Renovate, as in Pyjoyment, whose `AGENTS.md` says
+why.
+
+tflint checks `tofu/` with the rules of its plugins `terraform` and `aws`,
+from `.tflint.hcl` in the root of the repository, where the extensions of the
+editors find it, which the definition of tflint in `.trunk/trunk.yaml` names
+in `TFLINT_CONFIG_FILE`. `tflint --init` downloads the plugins from the
+releases of GitHub, whose API limits the requests without a token, so Trunk
+Check of CI has `GITHUB_TOKEN`, and a local run that fails with the limit of
+the API takes the one of `gh`:
+
+```sh
+GITHUB_TOKEN=$(gh auth token) trunk check --all --no-fix
+```
+
+Renovate does not bump the providers of `tofu/` nor its `required_version`,
+as the configuration is applied by hand: the providers and their lock are
+upgraded when it is applied.
+
+The workflows that start the checks of a commit of the token of a workflow, as
+Automated trunk upgrade and Biome Migrate, start every check that the ruleset
+of `main` requires: a new required check is added to them too.
+
+## Security
+
+Never read, display, reference, or include the contents of the following
+files:
+
+- `.env`, `.env.*`, `.envrc`
+- `.pypirc`
+- `*.tfvars`, as `tofu/terraform.tfvars` with the token of Cloudflare
+- `*.jks`, `*.keystore`, `*.p12`, `*.pfx`, `*.pem`, `*.key`
+
+The same list is git-ignored in `.gitignore`, and the rules of
+`permissions.deny` of `.claude/settings.json` enforce it for Claude Code, as
+in Pyjoyment: change all three together.
+
+## Commits and Pull Requests
+
+As in Pyjoyment: short subjects in the style of the history, mechanical and
+functional changes in separate commits, and a pull request with a validation
+checklist, checked only once verified.
