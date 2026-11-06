@@ -87,4 +87,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Deploy
+        env:
+          # The log without the time and the process, which the log of GitHub Actions has
+          PYJO_LOG_FORMAT: plain
         run: uv run --project site python deploy.py --distribution E3L54LJQ60FS5U site/dist/function.zip
