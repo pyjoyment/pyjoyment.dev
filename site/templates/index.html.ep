@@ -1,7 +1,3 @@
 % c.layout('default')
 % c.title('Pyjoyment')
-<h1>Hello Pyjoyment!</h1>
-<p>
-  The port of Mojolicious to Python, served by Pyjoyment on AWS Lambda.
-  Say <%= link_to('hello', url_for('hello')) %>.
-</p>
+<h1><%= link_to('I ❤️ Pyjoyment', 'https://github.com/pyjoyment/Pyjoyment') %></h1>

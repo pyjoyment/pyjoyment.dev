@@ -1,11 +1,31 @@
+/* Canvas and CanvasText are the colors of the light or the dark theme of the system */
+:root {
+  color-scheme: light dark;
+}
+
 body {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
   margin: 0;
+  background: Canvas;
+  color: CanvasText;
   font-family: system-ui, sans-serif;
-  line-height: 1.5;
 }
 
 main {
-  max-width: 40rem;
-  margin: 4rem auto;
-  padding: 0 1rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* At least 96px, but on a screen narrower than 96px / 18vw, where "Pyjoyment" fits its width at 18vw only */
+h1 {
+  margin: 0;
+  font-size: max(min(96px, 18vw), 10vw);
+  line-height: 1.1;
+}
+
+h1 a {
+  color: inherit;
+  text-decoration: none;
 }

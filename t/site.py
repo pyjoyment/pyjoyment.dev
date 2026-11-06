@@ -15,7 +15,7 @@ SITE = curfile().dirname().sibling('site')
 def check(t: Pyjo.Test.Pyjo.object) -> None:
     with subtest('Page'):
         t.get_ok('/').status_is(200).content_type_like(r'^text/html')
-        t.text_is('h1', 'Hello Pyjoyment!').element_exists('a[href="/hello"]')
+        t.text_is('h1 a[href="https://github.com/pyjoyment/Pyjoyment"]', 'I ❤️ Pyjoyment')
 
     with subtest('Dynamic'):
         t.get_ok('/hello').status_is(200).json_is('/hello', 'World').header_is('Cache-Control', None)
