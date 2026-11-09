@@ -47,7 +47,7 @@ def check(t: Pyjo.Test.Pyjo.object) -> None:
         t.text_is('#tab-0', 'app.py').text_is('#tab-1', 't/app.py')
 
         # A scenario of the catalog without its files
-        t.get_ok('/http/server/django').status_is(200)
+        t.get_ok('/aws/server/lambda').status_is(200)
         t.text_is('.example .soon', 'Coming soon.').element_exists_not('[role="tab"]')
 
         t.get_ok('/http/server/missing').status_is(404).header_is('Cache-Control', None)

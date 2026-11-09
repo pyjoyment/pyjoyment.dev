@@ -2,8 +2,9 @@
 # the scenarios of each feature and roles. The roles of a pair are joined with
 # "+" in the order of the roles here, as "server+tester". The files of a
 # scenario are in examples/<feature>/<roles>/<scenario>/, and a scenario
-# without them is shown as coming soon; "files" orders its tabs and names
-# them, and the files that it does not list follow in the order of their paths.
+# without them is shown as coming soon; "files" orders its tabs, names them
+# with "title" and highlights them with "language", as nginx for nginx.conf,
+# and the files that it does not list follow in the order of their paths.
 
 features:
   - id: application
@@ -99,20 +100,31 @@ scenarios:
     server:
       - id: django
         title: Django application
+        summary: Django on the server of Pyjoyment, instead of gunicorn, with a WebSocket and the probes next to it
       - id: lambda
         title: AWS Lambda function
         summary: The same application as a server and as an event function behind a Function URL
       - id: static
         title: Static file server
+        summary: The files of a directory, with ranges, ETags and the time of their cache
       - id: unix
         title: Unix server
+        summary: Workers of prefork with deployments of zero downtime, on a socket of UNIX behind nginx
+        files:
+          - name: app.py
+          - name: hot.sh
+          - name: nginx.conf
+            language: nginx
       - id: windows
         title: Windows server
+        summary: Threads of prethread, on the event loop of Winloop
     client:
       - id: blocking
         title: Blocking user agent
+        summary: Requests of a script, which wait for their responses, with JSON, forms and files
       - id: non-blocking
         title: Non-blocking user agent
+        summary: Many requests at the same time in the event loop, with a limit of their concurrency
     cli:
       - id: one-liners
         title: GET and POST one-liners
@@ -120,6 +132,7 @@ scenarios:
     tester:
       - id: test
         title: Test of HTTP
+        summary: Content negotiation, redirects and cookies, tested without a server
   html:
     server:
       - id: static

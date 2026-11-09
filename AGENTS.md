@@ -69,7 +69,10 @@ scripts of `Pyjoyment.Lite` and of the tests. `t/examples.py` compiles each
 example of Python without running it, as most of them need a cloud or another
 server, so an example that a test cannot run is still Python. highlight.js is in
 `public/vendor/highlight.js`, as its release minified it, which `biome.jsonc`
-leaves out.
+leaves out, with the languages that its common build does not have in
+`languages/`, which the layout loads. `LANGUAGES` of `site/app.py` gives the
+language of a file by its name or its extension, and `language` of a file in
+the catalog the one that neither tells, as `nginx` for `nginx.conf`.
 
 The function gets the requests with the host of its Function URL, not
 `pyjoyment.dev`, as the Function URL takes the requests of its own host only,
