@@ -27,7 +27,7 @@ def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
 
         # The footer, outside of <main>, which the script swaps
         t.text_like('body > footer .copyright', r'^© 2014–\d{4} Piotr Roszatycki$')
-        t.element_count_is('footer .badges img[src^="https://img.shields.io/"][alt]', 4)
+        t.element_count_is('footer .badges img[src^="https://img.shields.io/"][alt]', 5)
         t.element_exists('footer a[href="https://github.com/pyjoyment/pyjoyment.dev"][target="_blank"]')
 
     with subtest('Feature'):

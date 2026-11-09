@@ -23,6 +23,11 @@ BADGES = [
         'Stars of Pyjoyment on GitHub',
     ),
     (
+        'https://pyjoyment.readthedocs.io/',
+        f'{SHIELDS}/badge/read-docs-8ca1af?style=for-the-badge&logo=readthedocs&logoColor=white',
+        'The documentation of Pyjoyment on Read the Docs',
+    ),
+    (
         'https://github.com/pyjoyment/Pyjoyment/releases/latest',
         f'{SHIELDS}/github/v/release/pyjoyment/Pyjoyment?sort=semver&display_name=tag&style=for-the-badge&label=github&logo=github',
         'The latest release of Pyjoyment on GitHub',
