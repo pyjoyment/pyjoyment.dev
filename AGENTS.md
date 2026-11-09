@@ -61,7 +61,9 @@ without JavaScript and a test reads it as any page. A button selects its
 feature or role in place of the one selected, and the one selected unselects
 it. `public/js/site.js` swaps `<main>` with the one of the page of a link
 instead of loading it, and draws the link between the selected feature and
-role in SVG.
+role in SVG. The footer is outside of `<main>`, so it stays as the script
+swaps the page, and its badges, `BADGES` of `site/app.py`, are the images of
+shields.io, the only files of another host that the page loads.
 
 The examples are scripts, and ruff checks them with the exceptions of the
 scripts of `Pyjoyment.Lite` and of the tests, but pyright does not, with

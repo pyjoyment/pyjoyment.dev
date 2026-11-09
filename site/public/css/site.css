@@ -6,6 +6,7 @@
   --muted: color-mix(in srgb, CanvasText 60%, Canvas);
   --line: color-mix(in srgb, CanvasText 15%, Canvas);
   --radius: 999px;
+  --footer: 4rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,7 +28,8 @@ main {
   max-width: 60rem;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: 2rem 1rem 4rem;
+  /* Below the end of the page, the height of the fixed footer, which would hide it otherwise */
+  padding: 2rem 1rem calc(var(--footer) + 2rem);
 }
 
 .hero {
@@ -275,6 +277,69 @@ main {
 .soon {
   color: var(--muted);
   font-style: italic;
+}
+
+.footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--footer);
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--line);
+  background: Canvas;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.copyright {
+  margin: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badges a {
+  display: block;
+  line-height: 0;
+}
+
+.badges a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline-offset: 2px;
+}
+
+/* The badges below the copyright, on a screen too narrow for one line */
+@media (max-width: 48rem) {
+  :root {
+    --footer: 6.5rem;
+  }
+
+  .footer {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .badges {
+    justify-content: center;
+  }
+
+  .badges img {
+    width: auto;
+    height: 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

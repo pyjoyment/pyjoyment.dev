@@ -20,6 +20,11 @@ def check(t: Pyjo.Test.Pyjo.object) -> None:
         t.text_is('.feature[href="/http"]', 'HTTP').text_is('.role[href="/server"]', 'Server')
         t.element_exists_not('[aria-current]').element_exists_not('.scenarios')
 
+        # The footer, outside of <main>, which the script swaps
+        t.text_like('body > footer .copyright', r'^© 2014–\d{4} Piotr Roszatycki$')
+        t.element_count_is('footer .badges img[src^="https://img.shields.io/"][alt]', 4)
+        t.element_exists('footer a[href="https://github.com/pyjoyment/pyjoyment.dev"][target="_blank"]')
+
     with subtest('Feature'):
         t.get_ok('/http').status_is(200).text_is('title', 'HTTP | Pyjoyment')
         t.text_is('.feature[aria-current]', 'HTTP').attr_is('.feature[aria-current]', 'href', '/')

@@ -14,6 +14,31 @@ HOME = 'https://pyjoyment.dev'
 # The files of the examples on GitHub, of main, which the site is deployed from
 SOURCE = 'https://github.com/pyjoyment/pyjoyment.dev/blob/main/site/examples'
 
+# The badges of the footer, of shields.io, which renders them for each view: their link, their image and its text
+SHIELDS = 'https://img.shields.io'
+BADGES = [
+    (
+        'https://github.com/pyjoyment/Pyjoyment',
+        f'{SHIELDS}/github/stars/pyjoyment/Pyjoyment?style=for-the-badge&logo=github&label=stars',
+        'Stars of Pyjoyment on GitHub',
+    ),
+    (
+        'https://github.com/pyjoyment/Pyjoyment/releases/latest',
+        f'{SHIELDS}/github/v/release/pyjoyment/Pyjoyment?sort=semver&display_name=tag&style=for-the-badge&label=github&logo=github',
+        'The latest release of Pyjoyment on GitHub',
+    ),
+    (
+        'https://pypi.org/project/Pyjoyment/',
+        f'{SHIELDS}/pypi/v/Pyjoyment?style=for-the-badge&logo=pypi&logoColor=white&label=pypi',
+        'The version of Pyjoyment on PyPI',
+    ),
+    (
+        'https://github.com/pyjoyment/pyjoyment.dev',
+        f'{SHIELDS}/badge/source-pyjoyment.dev-02a7a0?style=for-the-badge&logo=github',
+        'The source of this site on GitHub',
+    ),
+]
+
 # The classes of highlight.js, by the name or the extension of a file, unless the catalog names the language of the file,
 # and plaintext otherwise; the layout loads the languages that the common build of highlight.js does not have
 LANGUAGES = {
@@ -126,6 +151,11 @@ def page(c, feature: str | None = None, role: str | None = None, scenario: str |
     # The pages change only with a deployment, which invalidates the distribution, as the files of public/; after the
     # rendering, so that the page of an exception of a template is not cached
     c.res.headers.cache_control = 'public, max-age=3600'
+
+
+@helper('badges')
+def badges(c):
+    return BADGES
 
 
 # The files of public/ change only with a deployment, so CloudFront and the browsers keep them for an hour, where a

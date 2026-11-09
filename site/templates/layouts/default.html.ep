@@ -18,5 +18,16 @@
   </head>
   <body>
     <main><%= content() %></main>
+    % import datetime
+    <footer class="footer">
+      <p class="copyright">© 2014–<%= datetime.date.today().year %> Piotr Roszatycki</p>
+      <ul class="badges">
+        % for href, src, alt in badges():
+          <li>
+            <a href="<%= href %>" target="_blank" rel="noopener"><img src="<%= src %>" alt="<%= alt %>" height="28"></a>
+          </li>
+        % end
+      </ul>
+    </footer>
   </body>
 </html>
