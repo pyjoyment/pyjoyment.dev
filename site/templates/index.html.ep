@@ -21,7 +21,7 @@
     % end
   </ul>
   <ul class="chips roles">
-    % for item in buttons:
+    % for item in roles:
       <li>
         <a class="chip role<%= ' empty' if item['empty'] else '' %>" href="<%= item['href'] %>" data-nav data-id="role-<%= item['id'] %>"<%== ' aria-current="true"' if item['selected'] else '' %>><%= item['title'] %></a>
       </li>
@@ -29,12 +29,12 @@
   </ul>
 </nav>
 
-% if not feature and not selected_roles:
-  <p class="hint">Pick a feature and a role, or two roles.</p>
+% if not feature and not role:
+  <p class="hint">Pick a feature and a role.</p>
 % elif not feature:
   <p class="hint">Now pick a feature.</p>
-% elif not selected_roles:
-  <p class="hint">Now pick a role, or two.</p>
+% elif not role:
+  <p class="hint">Now pick a role.</p>
 % elif not choices:
   <p class="hint">Nothing here yet: try another role.</p>
 % else:

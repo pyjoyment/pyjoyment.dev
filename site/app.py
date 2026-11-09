@@ -33,14 +33,6 @@ catalog = Pyjo.YAML.load(EXAMPLES.child('catalog.yaml').slurp())
 FEATURES = {feature['id']: feature for feature in catalog['features']}
 ROLES = {role['id']: role for role in catalog['roles']}
 
-# A role, or a pair of roles in the order of their selection, as "tester+server", the URL of the page keeps it, so the
-# third role replaces the first one
-SELECTIONS = [*ROLES, *(f'{a}+{b}' for a in ROLES for b in ROLES if a != b)]
-
-
-def roles_key(roles: list[str]) -> str:
-    return '+'.join(sorted(roles, key=list(ROLES).index))
-
 
 def tabs(directory, files: list[dict]) -> list[dict]:
     if not directory.is_dir:
@@ -65,57 +57,53 @@ def tabs(directory, files: list[dict]) -> list[dict]:
     ]
 
 
-# The scenarios by their feature and the key of their roles, with the files of their directories
+# The scenarios by their feature and role, with the files of their directories
 SCENARIOS: dict[tuple[str, str], list[dict]] = {}
-for feature, by_roles in catalog['scenarios'].items():
-    for key, scenarios in by_roles.items():
-        if feature not in FEATURES or key != roles_key(key.split('+')) or key not in SELECTIONS:
-            raise ValueError(f'Unknown or unordered scenarios {feature}/{key} in examples/catalog.yaml')
+for feature, by_role in catalog['scenarios'].items():
+    for role, scenarios in by_role.items():
+        if feature not in FEATURES or role not in ROLES:
+            raise ValueError(f'Unknown feature or role {feature}/{role} in examples/catalog.yaml')
         for scenario in scenarios:
-            scenario['tabs'] = tabs(EXAMPLES.child(feature, key, scenario['id']), scenario.get('files') or [])
-        SCENARIOS[feature, key] = scenarios
+            scenario['tabs'] = tabs(EXAMPLES.child(feature, role, scenario['id']), scenario.get('files') or [])
+        SCENARIOS[feature, role] = scenarios
 
 
-def path(feature: str | None = None, roles: list[str] | None = None, scenario: str | None = None) -> str:
-    return '/' + '/'.join(part for part in (feature, '+'.join(roles or []), scenario) if part)
+def path(*parts: str | None) -> str:
+    return '/' + '/'.join(part for part in parts if part)
 
 
-def page(c, feature: str | None = None, roles: list[str] | None = None, scenario: str | None = None) -> None:
-    roles = roles or []
-    key = roles_key(roles)
-    scenarios = SCENARIOS.get((feature, key), []) if feature and roles else []
+def page(c, feature: str | None = None, role: str | None = None, scenario: str | None = None) -> None:
+    scenarios = SCENARIOS.get((feature, role), []) if feature and role else []
     current = next((item for item in scenarios if item['id'] == scenario), None)
     if scenario and current is None:
         return c.reply.not_found()
 
+    # A button selects its feature or role, in place of the one selected, and the one selected unselects it
     features = [
         {
             **item,
             'selected': item['id'] == feature,
-            'href': c.url_for(path(None if item['id'] == feature else item['id'], roles)),
-            'empty': bool(roles) and item['id'] != feature and (item['id'], key) not in SCENARIOS,
+            'href': c.url_for(path(None if item['id'] == feature else item['id'], role)),
+            'empty': bool(role) and item['id'] != feature and (item['id'], role) not in SCENARIOS,
         }
         for item in FEATURES.values()
     ]
-    buttons = []
-    for item in ROLES.values():
-        selected = item['id'] in roles
-        after = [role for role in roles if role != item['id']] if selected else [*roles, item['id']][-2:]
-        buttons.append(
-            {
-                **item,
-                'selected': selected,
-                'href': c.url_for(path(feature, after)),
-                'empty': bool(feature) and not selected and (feature, roles_key(after)) not in SCENARIOS,
-            }
-        )
+    roles = [
+        {
+            **item,
+            'selected': item['id'] == role,
+            'href': c.url_for(path(feature, None if item['id'] == role else item['id'])),
+            'empty': bool(feature) and item['id'] != role and (feature, item['id']) not in SCENARIOS,
+        }
+        for item in ROLES.values()
+    ]
     choices = [
-        {**item, 'selected': item is current, 'href': c.url_for(path(feature, roles, item['id']))} for item in scenarios
+        {**item, 'selected': item is current, 'href': c.url_for(path(feature, role, item['id']))} for item in scenarios
     ]
 
-    heading = ' + '.join(ROLES[role]['title'] for role in sorted(roles, key=list(ROLES).index))
-    if feature:
-        heading = f'{FEATURES[feature]["title"]} {heading}'.strip()
+    heading = ' '.join(
+        title for title in (FEATURES.get(feature, {}).get('title'), ROLES.get(role, {}).get('title')) if title
+    )
     if current:
         heading = f'{heading}: {current["title"]}'
     c.title(f'{heading} | Pyjoyment' if heading else 'Pyjoyment')
@@ -123,12 +111,12 @@ def page(c, feature: str | None = None, roles: list[str] | None = None, scenario
     c.render(
         'index',
         feature=feature,
-        selected_roles=roles,
+        role=role,
         features=features,
-        buttons=buttons,
+        roles=roles,
         choices=choices,
         current=current,
-        canonical=HOME + path(feature, sorted(roles, key=list(ROLES).index), scenario),
+        canonical=HOME + path(feature, role, scenario),
     )
     # The pages change only with a deployment, which invalidates the distribution, as the files of public/; after the
     # rendering, so that the page of an exception of a template is not cached
@@ -153,24 +141,24 @@ def hello(c):
     c.render(json={'hello': c.param('name'), 'python': platform.python_version()})
 
 
-# /http or /server+client, a feature or roles alone
-@get('/:selection', selection=[*FEATURES, *SELECTIONS])
+# /http or /server, a feature or a role alone
+@get('/:selection', selection=[*FEATURES, *ROLES])
 def selection(c):
     value = c.param('selection')
     if value in FEATURES:
         page(c, feature=value)
     else:
-        page(c, roles=value.split('+'))
+        page(c, role=value)
 
 
-@get('/:feature/:roles', feature=list(FEATURES), roles=SELECTIONS)
+@get('/:feature/:role', feature=list(FEATURES), role=list(ROLES))
 def pair(c):
-    page(c, c.param('feature'), c.param('roles').split('+'))
+    page(c, c.param('feature'), c.param('role'))
 
 
-@get('/:feature/:roles/:scenario', feature=list(FEATURES), roles=SELECTIONS)
+@get('/:feature/:role/:scenario', feature=list(FEATURES), role=list(ROLES))
 def scenario(c):
-    page(c, c.param('feature'), c.param('roles').split('+'), c.param('scenario'))
+    page(c, c.param('feature'), c.param('role'), c.param('scenario'))
 
 
 # The handler "app.handler" of the event function, and the command of the arguments otherwise

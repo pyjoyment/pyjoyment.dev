@@ -1,6 +1,6 @@
 // The page works without JavaScript, as every selection is a page of its own;
 // this script swaps <main> instead of loading the page, and draws the links
-// between the selected feature and roles
+// between the selected feature and role
 document.documentElement.classList.add("js");
 
 const SVG = "http://www.w3.org/2000/svg";
@@ -32,7 +32,7 @@ function drawLinks() {
   svg.replaceChildren();
 
   const features = cloud.querySelectorAll(".feature[aria-current]");
-  const roles = [...cloud.querySelectorAll(".role[aria-current]")];
+  const roles = cloud.querySelectorAll(".role[aria-current]");
   for (const feature of features) {
     const [x1, y1] = center(box, feature.getBoundingClientRect(), "bottom");
     for (const role of roles) {
@@ -44,18 +44,6 @@ function drawLinks() {
         `M${x1},${y1} C${x1},${y} ${x2},${y} ${x2},${y2}`,
       );
     }
-  }
-
-  // A pair of roles is joined below them
-  if (roles.length === 2) {
-    const [x1, y1] = center(box, roles[0].getBoundingClientRect(), "bottom");
-    const [x2, y2] = center(box, roles[1].getBoundingClientRect(), "bottom");
-    const y = Math.max(y1, y2) + 24;
-    curve(
-      svg,
-      roles.map((role) => role.dataset.id).join(" "),
-      `M${x1},${y1} C${x1},${y} ${x2},${y} ${x2},${y2}`,
-    );
   }
 
   drawn = new Set([...svg.children].map((path) => path.dataset.key));

@@ -1,7 +1,6 @@
 # The features and the roles of the page, in the order of their buttons, and
-# the scenarios of each feature and roles. The roles of a pair are joined with
-# "+" in the order of the roles here, as "server+tester". The files of a
-# scenario are in examples/<feature>/<roles>/<scenario>/, and a scenario
+# the scenarios of each feature and role. The files of a scenario are in
+# examples/<feature>/<role>/<scenario>/, and a scenario
 # without them is shown as coming soon; "files" orders its tabs, names them
 # with "title" and highlights them with "language", as nginx for nginx.conf,
 # and the files that it does not list follow in the order of their paths.
@@ -89,13 +88,6 @@ scenarios:
       - id: websocket
         title: Test of a WebSocket
         summary: WebSockets and Server-Sent Events, tested without a server
-    server+tester:
-      - id: lite
-        title: Application with its test
-        summary: A script of Pyjoyment.Lite and the test of its session, as pyjo-prove runs it
-        files:
-          - name: app.py
-          - name: t/app.py
   http:
     server:
       - id: django
