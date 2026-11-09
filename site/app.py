@@ -11,12 +11,15 @@ EXAMPLES = curfile().dirname().child('examples')
 # The function gets the requests with the host of its Function URL, so the canonical URL names the host of the site
 HOME = 'https://pyjoyment.dev'
 
-# The classes of highlight.js, by the extension of a file, and plaintext otherwise
+# The classes of highlight.js, by the name or the extension of a file, unless the catalog names the language of the file,
+# and plaintext otherwise; the layout loads the languages that the common build of highlight.js does not have
 LANGUAGES = {
+    'Dockerfile': 'dockerfile',
     'ep': 'xml',
     'ini': 'ini',
     'js': 'javascript',
     'json': 'json',
+    'ps1': 'powershell',
     'py': 'python',
     'sh': 'bash',
     'toml': 'ini',
@@ -45,16 +48,18 @@ def tabs(directory, files: list[dict]) -> list[dict]:
         for path in directory.list_tree()
         if '__pycache__' not in path.to_str() and path.extname != 'pyc'
     }
-    named = [(file['name'], file.get('title', file['name'])) for file in files]
-    listed = {name for name, _ in named}
-    named += [(name, name) for name in sorted(paths) if name not in listed]
+    named = [{'title': file['name'], **file} for file in files]
+    listed = {file['name'] for file in named}
+    named += [{'name': name, 'title': name} for name in sorted(paths) if name not in listed]
     return [
         {
-            'title': title,
-            'language': LANGUAGES.get(paths[name].extname, 'plaintext'),
-            'code': paths[name].slurp('UTF-8'),
+            'title': file['title'],
+            'language': file.get('language')
+            or LANGUAGES.get(paths[file['name']].basename())
+            or LANGUAGES.get(paths[file['name']].extname, 'plaintext'),
+            'code': paths[file['name']].slurp('UTF-8'),
         }
-        for name, title in named
+        for file in named
     ]
 
 

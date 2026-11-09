@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="<%= url_for('/vendor/highlight.js/github-dark.min.css') %>" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="<%= url_for('/css/site.css') %>">
     <script src="<%= url_for('/vendor/highlight.js/highlight.min.js') %>" defer></script>
+    % for language in ('dockerfile', 'nginx', 'powershell'):
+      <script src="<%= url_for(f'/vendor/highlight.js/languages/{language}.min.js') %>" defer></script>
+    % end
     <script src="<%= url_for('/js/site.js') %>" defer></script>
   </head>
   <body>
