@@ -1,5 +1,6 @@
 # The commands of the application, of the script or of python -m MyApp
 python app.py daemon -l 'http://*:8080'   # HTTP and WebSocket server
+python app.py reload                      # a server that restarts when the files change, in development
 python app.py prefork -w 4                # four workers in processes of their own
 python app.py routes -v                   # the routes, their names and methods
 
