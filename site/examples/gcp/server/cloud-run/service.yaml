@@ -6,7 +6,7 @@ spec:
   template:
     spec:
       # The service account of the token of the metadata server, with the role Storage Object Viewer on the bucket
-      serviceAccountName: myapp@myproject.iam.gserviceaccount.com
+      serviceAccountName: myapp-sa@myproject.iam.gserviceaccount.com
       containers:
         - image: europe-west1-docker.pkg.dev/myproject/apps/myapp
           env:
