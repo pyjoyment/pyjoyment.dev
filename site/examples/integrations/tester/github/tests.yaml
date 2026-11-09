@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Tests (Python ${{ matrix.python }}, ${{ matrix.reactor }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python:
+          - "3.12"
+          - "3.14"
+          - 3.14t
+        reactor:
+          - Pyjo.Reactor.Asyncio
+          - Pyjo.Reactor.Poll
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # The Python of the matrix, for uv run in the project of pyproject.toml, as generate pyproject writes it
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10
+        with:
+          python-version: ${{ matrix.python }}
+
+      # The summary of the job in Markdown, with the diagnostics of each test
+      # script that failed, and the ResourceWarning of the development mode of
+      # Python, which goes to the standard error only, fails the job too
+      - name: Run the tests
+        env:
+          PYJO_REACTOR: ${{ matrix.reactor }}
+          PYTHONDEVMODE: "1"
+        run: |
+          uv run pyjo-prove -l -j 4 --timeout 60 --color --capture-stderr --formatter "markdown=$GITHUB_STEP_SUMMARY" -r t 2>&1 | tee prove.log
+          if grep -n 'ResourceWarning:' prove.log; then exit 1; fi

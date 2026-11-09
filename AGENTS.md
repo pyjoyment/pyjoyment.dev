@@ -36,10 +36,61 @@ or run in `site/`.
 the command of its arguments otherwise, as `daemon`.
 
 CloudFront caches what the application says with `Cache-Control`, and nothing
-else: the hook `after_static` gives the files of `public/` an hour, and a
-response of an action without the header is not cached. A deployment of new
-static files is seen after that hour, or after an invalidation of the
-distribution.
+else. In the mode `production`, the one of the function, the hook
+`after_static` and the pages of the showcase, after they are rendered, so that
+the page of an exception is not cached, give `public, max-age=3600,
+s-maxage=604800`: a week of CloudFront, which the invalidation of `/*` of each
+deployment ends, and an hour of the browsers, which it does not reach. In
+another mode, as the development of `daemon` and `reload`, they give
+`no-cache`, so that a change is seen at once. A response of an action without
+the header, as `/hello`, is not cached in any mode.
+
+### The Showcase
+
+The page is a showcase of Pyjoyment: the buttons of the features and of the
+roles, a scenario of the feature and the role, and the tabs of the files of
+the scenario. `site/examples/catalog.yaml` lists the features, the roles and
+the scenarios of each feature and role, and the files of a scenario are in
+`site/examples/<feature>/<role>/<scenario>/`. One role at a time, without the
+pairs of roles, as a scenario of two roles mixes two examples in one. A
+scenario without its directory is shown as coming soon, and a feature or a
+role that leads to no scenario is dimmed. The application reads the catalog
+and the files at its start, and fails on a feature or a role of the catalog
+that is not one of its lists, or a file of `files` that is missing.
+
+Each selection is a page of its own, `/http`, `/server`, `/http/server`,
+`/http/server/lambda`, rendered by `page` of `site/app.py`, so the page works
+without JavaScript and a test reads it as any page. A button selects its
+feature or role in place of the one selected, and the one selected unselects
+it. `public/js/site.js` swaps `<main>` with the one of the page of a link
+instead of loading it, and draws the link between the selected feature and
+role in SVG. The footer is outside of `<main>`, so it stays as the script
+swaps the page, and its badges, `BADGES` of `site/app.py`, are the images of
+shields.io, the only files of another host that the page loads.
+
+The examples are scripts, and ruff checks them with the exceptions of the
+scripts of `Pyjoyment.Lite` and of the tests, but pyright does not, with
+`ignore` of `pyrightconfig.json`, as they import libraries that the
+environment of `site/` does not have, as Django, Flask, Pyjo-GCP or Pyjo-MCP.
+The site runs on the Pyjoyment of `uv.lock`, a release whose public layer
+`deploy.py` finds, as 0.3.0, while the examples, which the site shows and does
+not run, may describe the next release, as 0.4.0, before it, and are reviewed
+again after it. A template of the site takes no `% else:` right after the
+`% end` of a loop in an `if`, which Pyjoyment 0.3.0 fails on
+(pyjoyment/Pyjoyment#575, fixed for 0.4.0), so the template of the page puts
+the branch without a loop first.
+A file whose real name is hidden, as `.mcp.json`, is in the directory of its
+scenario without its dot, with its real name as its `title` in the catalog,
+as `list_tree` and `generate lambda-zip` leave the hidden files out. `t/examples.py` compiles each
+example of Python without running it, as most of them need a cloud or another
+server, so an example that a test cannot run is still Python. highlight.js is in
+`public/vendor/highlight.js`, as its release minified it, which `biome.jsonc`
+leaves out, with the languages that its common build does not have in
+`languages/`, which the layout loads. `LANGUAGES` of `site/app.py` gives the
+language of a file by its name or its extension, and `language` of a file in
+the catalog the one that neither tells, as `nginx` for `nginx.conf`.
+HCL of the files `.tf`, which highlight.js has not, is the grammar of
+`public/js/hcl.js`, of this site, instead of a third-party one.
 
 The function gets the requests with the host of its Function URL, not
 `pyjoyment.dev`, as the Function URL takes the requests of its own host only,

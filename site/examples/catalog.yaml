@@ -1,0 +1,473 @@
+# The features and the roles of the page, in the order of their buttons, and
+# the scenarios of each feature and role. The files of a scenario are in
+# examples/<feature>/<role>/<scenario>/, and a scenario
+# without them is shown as coming soon; "files" orders its tabs, names them
+# with "title" and highlights them with "language", as nginx for nginx.conf,
+# and the files that it does not list follow in the order of their paths.
+
+features:
+  - id: application
+    title: Application
+    summary: Web applications, from one file to a whole project
+  - id: http
+    title: HTTP
+    summary: HTTP and WebSocket server and client
+  - id: html
+    title: HTML
+    summary: HTML and XML, with templates, the DOM and CSS selectors
+  - id: aws
+    title: AWS
+    summary: Amazon Web Services without boto3
+  - id: gcp
+    title: GCP
+    summary: Google Cloud without its client libraries
+  - id: mcp
+    title: MCP
+    summary: Model Context Protocol servers and clients
+  - id: integrations
+    title: Integrations
+    summary: Glue with other frameworks and servers
+
+roles:
+  - id: server
+    title: Server
+  - id: client
+    title: Client
+  - id: cli
+    title: CLI
+  - id: tester
+    title: Tester
+
+scenarios:
+  application:
+    server:
+      - id: lite
+        title: Application in one file
+        summary: Routes, actions and templates of Pyjoyment.Lite in one script
+      - id: full
+        title: Application with controllers
+        summary: The class of the application, its controllers, templates and configuration, as pyjo generate app makes them
+        files:
+          - name: MyApp/__init__.py
+          - name: MyApp/Controller/Notes.py
+          - name: templates/notes/index.html.ep
+          - name: templates/notes/show.html.ep
+          - name: templates/layouts/default.html.ep
+          - name: my_app.yml
+          - name: MyApp/__main__.py
+      - id: json-api
+        title: JSON API with validation
+        summary: JSON Schema of the type hints, which validates a request with the JSON Pointers of its errors
+      - id: websocket
+        title: WebSocket
+        summary: An echo server, and its page with a WebSocket in the browser
+      - id: sse
+        title: Server-Sent Events
+        summary: A countdown, written as it goes, without blocking the other connections
+      - id: plugin
+        title: Plugin of its own
+        summary: A helper and the hooks of each request, which a plugin adds to the application
+        files:
+          - name: MyPlugins/Timing.py
+          - name: app.py
+    client:
+      - id: non-blocking
+        title: Non-blocking requests of an action
+        summary: Two services at the same time, within a limit of time, while the server goes on
+    cli:
+      - id: generate
+        title: New application with pyjo generate
+        summary: A new application, in one file or with controllers, and the files of its deployment
+      - id: commands
+        title: Commands of the application
+        summary: Servers, routes, requests without a server and code against the application
+    tester:
+      - id: test
+        title: Test of an application
+        summary: An application and its test in one script, with Pyjo.Test.Pyjo, without a server
+      - id: websocket
+        title: Test of a WebSocket
+        summary: WebSockets and Server-Sent Events, tested without a server
+  http:
+    server:
+      - id: django
+        title: Django application
+        summary: Django on the server of Pyjoyment, instead of gunicorn, with a WebSocket and the probes next to it
+      - id: lambda
+        title: AWS Lambda function
+        summary: The same application as a server and as an event function behind a Function URL
+      - id: static
+        title: Static file server
+        summary: The files of a directory, with ranges, ETags and the time of their cache
+      - id: unix
+        title: Unix server
+        summary: Workers of prefork with deployments of zero downtime, on a socket of UNIX behind nginx
+        files:
+          - name: app.py
+          - name: hot.sh
+          - name: nginx.conf
+            language: nginx
+      - id: windows
+        title: Windows server
+        summary: Threads of prethread, on the event loop of Winloop
+    client:
+      - id: blocking
+        title: Blocking user agent
+        summary: Requests of a script, which wait for their responses, with JSON, forms and files
+      - id: non-blocking
+        title: Non-blocking user agent
+        summary: Many requests at the same time in the event loop, with a limit of their concurrency
+    cli:
+      - id: one-liners
+        title: GET and POST one-liners
+        summary: Requests from the command line, with the functions of python -m Pyjo
+    tester:
+      - id: test
+        title: Test of HTTP
+        summary: Content negotiation, redirects and cookies, tested without a server
+  html:
+    server:
+      - id: static
+        title: Static files
+        summary: The pages and the files of public/ as they are, which the browsers keep for an hour
+        files:
+          - name: app.py
+          - name: public/index.html
+          - name: public/css/site.css
+      - id: templates
+        title: Dynamic templates
+        summary: Templates of Embedded Python with a layout, a partial template and a form with CSRF and validation
+        files:
+          - name: app.py
+          - name: templates/index.html.ep
+          - name: templates/_item.html.ep
+          - name: templates/layouts/default.html.ep
+      - id: xml-feed
+        title: XML feed
+        summary: An Atom feed of a template of XML, which escapes its values as one of HTML does
+    client:
+      - id: dom-css
+        title: DOM and CSS selectors
+        summary: A page parsed and searched with Pyjo.DOM
+      - id: aws-xml
+        title: XML of an AWS API
+        summary: The XML of a response of S3 queried with CSS selectors, and the XML of a request from a template
+    cli:
+      - id: one-liners
+        title: HTML and CSS one-liners
+        summary: The elements of a page by their CSS selectors, of a URL, the standard input or the command line
+      - id: template
+        title: Templates of any text
+        summary: A configuration of nginx from a template of Embedded Python, without a server and the escaping of HTML
+        files:
+          - name: render.py
+          - name: site.conf.ep
+            language: nginx
+          - name: render.sh
+    tester:
+      - id: test
+        title: Test of HTML
+        summary: The elements, the texts and the attributes of a page, by their CSS selectors
+  aws:
+    server:
+      - id: lambda
+        title: Lambda function with layers
+        summary: An application on the runtime of Python of Lambda, with Pyjoyment and Pyjo-AWS of the public layer, and the credentials of the role of the function
+        files:
+          - name: app.py
+          - name: deploy.sh
+          - name: main.tf
+      - id: eks
+        title: Pod of EKS with IRSA or Pod Identity
+        summary: The credentials of the service account of the pod, and the probes of Kubernetes, whose readiness waits for the bucket
+        files:
+          - name: app.py
+          - name: kubernetes.yaml
+          - name: deploy.sh
+          - name: main.tf
+      - id: ecs
+        title: ECS service
+        summary: The credentials of the role of the task, in the image of generate dockerfile, on Fargate
+        files:
+          - name: app.py
+          - name: task-definition.json
+          - name: Dockerfile
+          - name: deploy.sh
+          - name: main.tf
+      - id: ec2
+        title: EC2 instance
+        summary: The credentials of the instance profile of IMDSv2, and the secrets of Parameter Store, read once by the manager of prefork under systemd
+        files:
+          - name: app.py
+          - name: myapp.service
+            language: ini
+          - name: deploy.sh
+          - name: main.tf
+    client:
+      - id: sts
+        title: STS
+        summary: The identity of the credentials, and the temporary credentials of a role, which sign the next calls
+      - id: s3
+        title: S3
+        summary: Objects listed, downloaded as they are, and uploaded at the same time, without boto3
+      - id: kms
+        title: KMS
+        summary: A text encrypted and decrypted with a key of KMS and an encryption context, and the error of AWS
+      - id: sigv4
+        title: Signed requests of the user agent
+        summary: Signature Version 4 of any request of Pyjo.UserAgent, as to a Function URL of AWS_IAM
+    cli:
+      - id: sts-one-liner
+        title: STS one-liners with ~/.aws
+        summary: The identity of a profile of any kind, with the functions of python -m Pyjo
+      - id: regions
+        title: Script with getopt that lists the regions
+        summary: Options of Pyjo.Util.getopt, as the AWS CLI names them, and the XML of EC2
+    tester:
+      - id: test
+        title: Test of AWS
+        summary: Code of Pyjo-AWS against S3 of the test, an application of Pyjoyment.Lite without a server
+  gcp:
+    server:
+      - id: cloud-run
+        title: Cloud Run
+        summary: A script with its dependencies as an image of prefork, on the PORT of Cloud Run, with the token of its service account
+        files:
+          - name: app.py
+          - name: service.yaml
+          - name: deploy.sh
+          - name: main.tf
+      - id: gke
+        title: Pod of GKE with GSA and KSA or Workload Identity Federation
+        summary: Messages to Pub/Sub with the token of the pod, of a service account of Google bound to the one of Kubernetes, or of the latter itself
+        files:
+          - name: app.py
+          - name: kubernetes.yaml
+          - name: iam.sh
+          - name: main.tf
+      - id: compute
+        title: Compute Engine instance
+        summary: The secret of the sessions from Secret Manager, with the token of the instance, and prefork under systemd behind the load balancer
+        files:
+          - name: app.py
+          - name: myapp.service
+            language: ini
+          - name: instance.sh
+          - name: main.tf
+    client:
+      - id: jwt
+        title: JWT and ID tokens
+        summary: A JWT signed with the key of a service account, an ID token for a private Cloud Run service, and both verified with the public keys of Google
+        files:
+          - name: sign.py
+          - name: verify.py
+          - name: id_token.py
+      - id: gcs
+        title: GCS
+        summary: Objects of Cloud Storage listed page by page, uploaded, read and deleted with the JSON API
+      - id: kms
+        title: KMS
+        summary: Files encrypted and decrypted with a key of Cloud KMS, in Base64 of JSON both ways
+    cli:
+      - id: token-one-liner
+        title: Token one-liners with gcloud auth application-default
+        summary: The access token, its owner and its project, of a user, of Workload Identity Federation or of an impersonated service account
+      - id: regions
+        title: Script with getopt that lists the regions
+        summary: The regions of Compute Engine and their zones, with options of Pyjo.GetOpt and the project of the credentials
+    tester:
+      - id: test
+        title: Test of GCP
+        summary: Code that calls Cloud Storage, tested against Cloud Storage of its own, an application of Pyjoyment.Lite without a server
+        files:
+          - name: reports.py
+          - name: t/latest.py
+  mcp:
+    server:
+      - id: http
+        title: MCP over HTTP
+        summary: Tools, a resource template and a prompt, with the schemas of their type hints, at an endpoint of Streamable HTTP without sessions
+      - id: stdio
+        title: MCP over stdio
+        summary: A local server of the files of the project, with a message of JSON-RPC on each line, and the same tools over HTTP with daemon
+      - id: confirm
+        title: Confirmation of the user
+        summary: A tool that asks the user before it deletes, in the rounds of a multi round-trip request, and the client that answers
+        files:
+          - name: app.py
+          - name: client.py
+    client:
+      - id: http
+        title: Connection to MCP over HTTP
+        summary: The tools, a resource and a prompt of a server, its errors, and calls at the same time with promises
+      - id: stdio
+        title: Connection to MCP over stdio
+        summary: The server in a child process, with the requests of JSON-RPC on its standard input and output
+    cli:
+      - id: client
+        title: MCP client script with getopt
+        summary: Any tool of any server from the shell, with its arguments after its name and the exit status of its result
+      - id: skills
+        title: Skills of Pyjoyment
+        summary: The plugin of Claude Code with the skills of Pyjoyment, from the marketplace of its repository, for one user or a whole team
+        files:
+          - name: install.sh
+          - name: settings.json
+            title: .claude/settings.json
+      - id: claude
+        title: Pyjo-MCP server in Claude
+        summary: A server over HTTP or over stdio, added to Claude Code from the shell or in the .mcp.json of the project
+        files:
+          - name: claude.sh
+          - name: mcp.json
+            title: .mcp.json
+    tester:
+      - id: test
+        title: Test of MCP
+        summary: Tools, errors, prompts and completions of a server, tested with the requests of the client and without a network
+  integrations:
+    server:
+      - id: django
+        title: Django application, step by step
+        summary: The pages of Django move to Pyjoyment one route at a time, with one test of both, without a server
+        files:
+          - name: app.py
+          - name: t/migration.py
+          - name: steps.sh
+      - id: asyncio
+        title: asyncio server next to Pyjoyment
+        summary: A chat of TCP with the streams of asyncio and the WebSockets of Pyjoyment, in the same event loop
+      - id: lambda
+        title: Lambda function on a Pyjo server
+        summary: An event function of a REST API, which runs and is tested as API Gateway runs it, without AWS
+        files:
+          - name: function.py
+          - name: app.py
+          - name: t/api.py
+          - name: run.sh
+      - id: cgi
+        title: CGI programs on a Pyjo server
+        summary: The programs of cgi-bin, in shell or Perl, each in a process of its own for each request
+        files:
+          - name: app.py
+          - name: cgi-bin/uptime.sh
+          - name: cgi-bin/form.pl
+            language: perl
+          - name: run.sh
+      - id: fastcgi
+        title: PHP on php-fpm on a Pyjo server
+        summary: A front controller of PHP and its static files, with a WebSocket of Pyjoyment next to them
+        files:
+          - name: app.py
+          - name: www/index.php
+            language: php
+          - name: www/css/site.css
+          - name: php-fpm.conf
+            language: ini
+          - name: run.sh
+      - id: wsgi
+        title: Flask application on a Pyjo server
+        summary: Flask under a prefix, with its links, on the workers of prefork, as gunicorn would run it
+        files:
+          - name: legacy.py
+          - name: app.py
+          - name: run.sh
+      - id: asgi
+        title: FastAPI application on a Pyjo server
+        summary: FastAPI under /api with its lifespan and its documentation, as a task of asyncio of the server
+      - id: cli
+        title: Command-line programs on a Pyjo server
+        summary: The output of ping streamed as it comes, and the calculator bc on a WebSocket
+    client:
+      - id: asyncio
+        title: Pyjo application in an asyncio program
+        summary: A worker of asyncio whose jobs come from the routes of Pyjoyment, on the event loop of asyncio.run
+        files:
+          - name: worker.py
+          - name: run.sh
+      - id: gunicorn
+        title: Pyjo application on gunicorn
+        summary: The same script on gunicorn with PYJO_WSGI, in production mode, and on the servers of Pyjoyment
+      - id: uvicorn
+        title: Pyjo application on uvicorn
+        summary: WebSockets, Server-Sent Events and the lifespan of ASGI, on uvicorn with uvloop
+      - id: gevent
+        title: Pyjo application on gevent
+        summary: Blocking requests in greenlets, which wait in the hub of gevent without blocking the server
+      - id: twisted
+        title: Pyjo application on Twisted
+        summary: A Deferred of Twisted in an action, and twisted.web next to Pyjoyment, in the reactor of Twisted
+      - id: django
+        title: Pyjo application in Django
+        summary: A script of Pyjoyment under a path of the ASGI application of Django, with its WebSockets and its lifespan
+        files:
+          - name: mysite/asgi.py
+          - name: realtime.py
+          - name: run.sh
+      - id: lambda
+        title: Streaming Lambda function
+        summary: The words of an answer streamed as they come, through a Function URL with RESPONSE_STREAM
+        files:
+          - name: app.py
+          - name: wrapper.py
+          - name: deploy.sh
+    cli:
+      - id: virtualenv
+        title: Run from a virtualenv
+        summary: pip and venv, the commands of Pyjoyment in .venv/bin, and the shebang of an activated virtualenv
+        files:
+          - name: venv.sh
+          - name: app.py
+      - id: uv
+        title: Run with uv
+        summary: A script with its dependencies in its inline metadata, run, locked and grown into a project by uv
+      - id: crontab
+        title: Run from crontab
+        summary: A helper of the application, run by eval and get without a server, whose failure cron mails
+        files:
+          - name: crontab
+            language: bash
+          - name: app.py
+          - name: install.sh
+      - id: systemd
+        title: Run as a systemd service
+        summary: Workers of prefork on the socket of systemd, which keeps the requests while the service restarts
+        files:
+          - name: myapp.service
+            language: ini
+          - name: myapp.socket
+            language: ini
+          - name: install.sh
+    tester:
+      - id: pytest
+        title: pytest
+        summary: Tests of pytest with the fixture t, and the test scripts of pyjo-prove, in one run
+        files:
+          - name: tests/test_app.py
+          - name: tests/conftest.py
+          - name: t/basic.py
+          - name: pyproject.toml
+          - name: app.py
+          - name: run.sh
+      - id: unittest
+        title: unittest
+        summary: Pyjo.Test.Pyjo in a TestCase, whose failed assertions raise AssertionError
+        files:
+          - name: tests/test_app.py
+          - name: app.py
+          - name: run.sh
+      - id: github
+        title: GitHub Actions
+        summary: pyjo-prove on a matrix of Pythons and reactors, with the summary of the job in Markdown
+        files:
+          - name: tests.yaml
+            title: .github/workflows/tests.yaml
+          - name: t/basic.py
+          - name: app.py
+      - id: junit
+        title: JUnit reports
+        summary: The JUnit XML of pyjo-prove, for the test reports of GitLab CI and other CI systems
+        files:
+          - name: gitlab-ci.yml
+            title: .gitlab-ci.yml
+          - name: report.sh

@@ -1,0 +1,4 @@
+% layout('default')
+% title(note)
+<p><%= note %></p>
+<p><%= link_to('All notes', '/') %></p>

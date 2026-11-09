@@ -18,6 +18,13 @@ select = ["B", "E4", "E7", "E9", "F", "I", "UP"]
   # F405 "`get` may be undefined, or defined from star imports"
   "F405",
 ]
+# The examples of the page are scripts of Pyjoyment.Lite and tests, as the ones above and below.
+"site/examples/**" = [
+  # F403 "`from Pyjoyment.Lite import *` used; unable to detect undefined names"
+  "F403",
+  # F405 "`get` may be undefined, or defined from star imports"
+  "F405",
+]
 # Test scripts import all test functions, like `use Test::More` in Perl.
 "t/**" = [
   # F403 "`from Pyjo.Test import *` used; unable to detect undefined names"

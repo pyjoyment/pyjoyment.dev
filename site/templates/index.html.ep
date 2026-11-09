@@ -1,3 +1,79 @@
 % c.layout('default')
-% c.title('Pyjoyment')
-<h1><%= link_to('I ❤️ Pyjoyment', 'https://github.com/pyjoyment/Pyjoyment') %></h1>
+<header class="hero">
+  <h1>
+    <a href="<%= url_for('/') %>" data-nav data-id="home">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="<%= url_for('/pyjo/logo-white-4x.svg') %>">
+        <img src="<%= url_for('/pyjo/logo-black-4x.svg') %>" alt="Pyjoyment" width="322" height="76">
+      </picture>
+    </a>
+  </h1>
+  <p class="tagline">Glue, run and ship Python applications. Zero dependencies.</p>
+</header>
+
+<nav class="cloud" aria-label="Features and roles">
+  <svg class="links" aria-hidden="true"></svg>
+  <ul class="chips features">
+    % for item in features:
+      <li>
+        <a class="chip feature<%= ' empty' if item['empty'] else '' %>" href="<%= item['href'] %>" title="<%= item['summary'] %>" data-nav data-id="feature-<%= item['id'] %>"<%== ' aria-current="true"' if item['selected'] else '' %>><%= item['title'] %></a>
+      </li>
+    % end
+  </ul>
+  <ul class="chips roles">
+    % for item in roles:
+      <li>
+        <a class="chip role<%= ' empty' if item['empty'] else '' %>" href="<%= item['href'] %>" data-nav data-id="role-<%= item['id'] %>"<%== ' aria-current="true"' if item['selected'] else '' %>><%= item['title'] %></a>
+      </li>
+    % end
+  </ul>
+</nav>
+
+% if not feature and not role:
+  <p class="hint">Pick a feature and a role.</p>
+% elif not feature:
+  <p class="hint">Now pick a feature.</p>
+% elif not role:
+  <p class="hint">Now pick a role.</p>
+% elif not choices:
+  <p class="hint">Nothing here yet: try another role.</p>
+% else:
+  <ul class="chips scenarios" aria-label="Scenarios">
+    % for item in choices:
+      <li>
+        <a class="chip scenario<%= '' if item['tabs'] else ' soon' %>" href="<%= item['href'] %>" data-nav data-id="scenario-<%= item['id'] %>"<%== ' aria-current="true"' if item['selected'] else '' %>><%= item['title'] %></a>
+      </li>
+    % end
+  </ul>
+% end
+
+% if current:
+  <section class="example" aria-labelledby="example-title">
+    <h2 id="example-title"><%= current['title'] %></h2>
+    % if current.get('summary'):
+      <p><%= current['summary'] %></p>
+    % end
+    %# Pyjoyment 0.3.0 takes no % else: right after the % end of a loop in an if, pyjoyment/Pyjoyment#575, until 0.4.0
+    % if not current['tabs']:
+      <p class="soon">Coming soon.</p>
+    % else:
+      <div class="tabs" role="tablist" aria-label="Files">
+        % for n, tab in enumerate(current['tabs']):
+          <button type="button" role="tab" id="tab-<%= n %>" aria-controls="panel-<%= n %>" aria-selected="<%= 'true' if n == 0 else 'false' %>"><%= tab['title'] %></button>
+        % end
+      </div>
+      % for n, tab in enumerate(current['tabs']):
+        <figure class="panel" role="tabpanel" id="panel-<%= n %>" aria-labelledby="tab-<%= n %>">
+          <figcaption>
+            <span class="name"><%= tab['title'] %></span>
+            <span class="actions">
+              <button type="button" class="copy" aria-live="polite">Copy</button>
+              <a class="source" href="<%= tab['source'] %>" target="_blank" rel="noopener" aria-label="<%= tab['title'] %> on GitHub, in a new tab">GitHub</a>
+            </span>
+          </figcaption>
+          <pre><code class="language-<%= tab['language'] %>"><%= tab['code'] %></code></pre>
+        </figure>
+      % end
+    % end
+  </section>
+% end

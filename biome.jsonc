@@ -4,7 +4,9 @@
     "includes": [
       "**",
       // Rewritten by trunk upgrade
-      "!**/.trunk"
+      "!**/.trunk",
+      // highlight.js as its release minified it
+      "!site/public/vendor"
     ]
   },
   "formatter": {

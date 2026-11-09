@@ -1,0 +1,9 @@
+# The listen socket, which systemd keeps open while the service restarts, so that a request waits instead of failing
+[Unit]
+Description=Socket of myapp
+
+[Socket]
+ListenStream=8080
+
+[Install]
+WantedBy=sockets.target

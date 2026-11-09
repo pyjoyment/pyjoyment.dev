@@ -1,0 +1,16 @@
+[Unit]
+Description=myapp
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=myapp
+WorkingDirectory=/opt/myapp
+Environment=AWS_REGION=eu-central-1
+# The manager of prefork itself, without uv, which stops its workers gracefully on TERM within the graceful timeout
+ExecStart=/opt/myapp/.venv/bin/python app.py prefork -m production -l http://*:8080 -w 4
+TimeoutStopSec=30
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

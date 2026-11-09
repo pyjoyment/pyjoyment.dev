@@ -1,0 +1,17 @@
+tests:
+  image: ghcr.io/astral-sh/uv:python3.14-bookworm-slim
+  parallel:
+    matrix:
+      - PYJO_REACTOR:
+          - Pyjo.Reactor.Asyncio
+          - Pyjo.Reactor.Poll
+  variables:
+    PYTHONDEVMODE: "1"
+  # The usual output in the log of the job, and the JUnit XML of the results, with the diagnostics of the failed tests
+  # from the standard error of the test scripts, for the tab Tests of the pipeline and the widget of the merge request
+  script:
+    - uv run pyjo-prove -l -j 4 --timeout 60 --capture-stderr --formatter console --formatter junit=report.xml -r t
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml

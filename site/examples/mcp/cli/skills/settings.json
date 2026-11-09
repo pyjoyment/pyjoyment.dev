@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "pyjoyment": {
+      "source": {
+        "source": "github",
+        "repo": "pyjoyment/Pyjoyment"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "pyjoyment@pyjoyment": true
+  }
+}

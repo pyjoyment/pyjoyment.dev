@@ -1,31 +1,356 @@
 /* Canvas and CanvasText are the colors of the light or the dark theme of the system */
 :root {
   color-scheme: light dark;
+  --accent: #02a7a0;
+  --role: #3776ab;
+  --muted: color-mix(in srgb, CanvasText 60%, Canvas);
+  --line: color-mix(in srgb, CanvasText 15%, Canvas);
+  --radius: 999px;
+  --footer: 4rem;
+  --links: 4.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --role: #6fa8dc;
+  }
 }
 
 body {
-  display: grid;
-  place-items: center;
-  min-height: 100dvh;
   margin: 0;
   background: Canvas;
   color: CanvasText;
   font-family: system-ui, sans-serif;
+  line-height: 1.5;
 }
 
 main {
-  padding: 1rem;
+  box-sizing: border-box;
+  max-width: 60rem;
+  min-height: 100dvh;
+  margin: 0 auto;
+  /* Below the end of the page, the height of the fixed footer, which would hide it otherwise */
+  padding: 2rem 1rem calc(var(--footer) + 2rem);
+}
+
+.hero {
   text-align: center;
 }
 
-/* At least 96px, but on a screen narrower than 96px / 18vw, where "Pyjoyment" fits its width at 18vw only */
-h1 {
+.hero h1 {
   margin: 0;
-  font-size: max(min(96px, 18vw), 10vw);
-  line-height: 1.1;
 }
 
-h1 a {
-  color: inherit;
+.hero img {
+  width: min(322px, 80vw);
+  height: auto;
+}
+
+.tagline {
+  /* As far from the features as the features from the roles, below them */
+  margin: 0.5rem 0 var(--links);
+  color: var(--muted);
+  font-size: 1.125rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The roles are far enough below the features for the links between them */
+.cloud {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: var(--links);
+  margin-bottom: 3rem;
+}
+
+.links {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.links path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+.links path.draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 0.5s ease-out forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.chip {
+  --color: var(--accent);
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border: 2px solid var(--color);
+  border-radius: var(--radius);
+  background: Canvas;
+  color: var(--color);
+  font-weight: 600;
   text-decoration: none;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.chip:hover {
+  transform: translateY(-2px);
+}
+
+.chip:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color) 50%, transparent);
+  outline-offset: 2px;
+}
+
+.chip[aria-current] {
+  background: var(--color);
+  color: Canvas;
+}
+
+.feature {
+  font-size: 1.125rem;
+}
+
+.role {
+  --color: var(--role);
+  font-size: 1.125rem;
+}
+
+.scenario {
+  --color: CanvasText;
+  border-width: 1px;
+  font-weight: 500;
+}
+
+.chip.empty,
+.chip.soon {
+  opacity: 0.45;
+}
+
+.hint {
+  color: var(--muted);
+  text-align: center;
+}
+
+.example {
+  margin-top: 2.5rem;
+}
+
+.example h2 {
+  margin: 0 0 0.25rem;
+}
+
+.example > p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+
+.tabs {
+  display: none;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.js .tabs {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tabs button {
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-family: ui-monospace, monospace;
+  cursor: pointer;
+}
+
+.tabs button[aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: CanvasText;
+}
+
+.panel {
+  margin: 1rem 0 0;
+}
+
+/* The bar of a file, above its code: its name, which the tab shows already with JavaScript, and its actions */
+.panel figcaption {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.5rem 0.25rem 1rem;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 0.5rem 0.5rem 0 0;
+  font-family: ui-monospace, monospace;
+  font-size: 0.875rem;
+}
+
+.js .panel .name {
+  visibility: hidden;
+}
+
+.actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.actions .copy,
+.actions .source {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-family: system-ui, sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.actions .copy:hover,
+.actions .source:hover {
+  border-color: var(--accent);
+  color: CanvasText;
+}
+
+.actions .copy:focus-visible,
+.actions .source:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline-offset: 2px;
+}
+
+/* The clipboard needs JavaScript */
+.actions .copy {
+  display: none;
+}
+
+.js .actions .copy {
+  display: inline-block;
+}
+
+.actions .copy.copied {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.panel pre {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 0 0 0.5rem 0.5rem;
+  overflow: auto;
+}
+
+.panel code {
+  display: block;
+  padding: 1rem;
+  font-size: 0.875rem;
+}
+
+.soon {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--footer);
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--line);
+  background: Canvas;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.copyright {
+  margin: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badges a {
+  display: block;
+  line-height: 0;
+}
+
+.badges a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline-offset: 2px;
+}
+
+/* The badges below the copyright, on a screen too narrow for one line */
+@media (max-width: 48rem) {
+  :root {
+    --footer: 6.5rem;
+  }
+
+  .footer {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .badges {
+    justify-content: center;
+  }
+
+  .badges img {
+    width: auto;
+    height: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .links path.draw {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .chip {
+    transition: none;
+  }
 }

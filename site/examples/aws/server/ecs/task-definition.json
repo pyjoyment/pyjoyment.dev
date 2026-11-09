@@ -1,0 +1,46 @@
+{
+  "family": "jobs",
+  "taskRoleArn": "arn:aws:iam::123456789012:role/jobs",
+  "executionRoleArn": "arn:aws:iam::123456789012:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "runtimePlatform": {
+    "cpuArchitecture": "ARM64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "jobs",
+      "image": "123456789012.dkr.ecr.eu-central-1.amazonaws.com/jobs:1.0",
+      "portMappings": [{ "containerPort": 3000 }],
+      "environment": [
+        { "name": "PYJO_MODE", "value": "production" },
+        {
+          "name": "QUEUE_URL",
+          "value": "https://sqs.eu-central-1.amazonaws.com/123456789012/jobs"
+        }
+      ],
+      "healthCheck": {
+        "command": [
+          "CMD",
+          "python",
+          "-m",
+          "Pyjo",
+          "sys.exit(g('http://127.0.0.1:3000/livez').code != 200)"
+        ],
+        "startPeriod": 30
+      },
+      "stopTimeout": 30,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/jobs",
+          "awslogs-region": "eu-central-1",
+          "awslogs-stream-prefix": "jobs"
+        }
+      }
+    }
+  ]
+}
