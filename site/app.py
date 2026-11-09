@@ -52,6 +52,7 @@ LANGUAGES = {
     'ps1': 'powershell',
     'py': 'python',
     'sh': 'bash',
+    'tf': 'hcl',
     'toml': 'ini',
     'yaml': 'yaml',
     'yml': 'yaml',

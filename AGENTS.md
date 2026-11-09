@@ -85,6 +85,8 @@ leaves out, with the languages that its common build does not have in
 `languages/`, which the layout loads. `LANGUAGES` of `site/app.py` gives the
 language of a file by its name or its extension, and `language` of a file in
 the catalog the one that neither tells, as `nginx` for `nginx.conf`.
+HCL of the files `.tf`, which highlight.js has not, is the grammar of
+`public/js/hcl.js`, of this site, instead of a third-party one.
 
 The function gets the requests with the host of its Function URL, not
 `pyjoyment.dev`, as the Function URL takes the requests of its own host only,

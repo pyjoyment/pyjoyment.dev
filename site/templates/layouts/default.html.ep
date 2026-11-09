@@ -14,6 +14,7 @@
     % for language in ('dockerfile', 'nginx', 'powershell'):
       <script src="<%= url_for(f'/vendor/highlight.js/languages/{language}.min.js') %>" defer></script>
     % end
+    <script src="<%= url_for('/js/hcl.js') %>" defer></script>
     <script src="<%= url_for('/js/site.js') %>" defer></script>
   </head>
   <body>
