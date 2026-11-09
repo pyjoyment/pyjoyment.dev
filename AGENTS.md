@@ -66,7 +66,12 @@ it. `public/js/site.js` swaps `<main>` with the one of the page of a link
 instead of loading it, and draws the link between the selected feature and
 role in SVG. The footer is outside of `<main>`, so it stays as the script
 swaps the page, and its badges, `BADGES` of `site/app.py`, are the images of
-shields.io, the only files of another host that the page loads.
+shields.io. The other files of another host are those of Google Tag Manager,
+`GTM-5NGTPTM6`, which the layout loads in the mode `production` only, so that
+the development and the tests of the server send nothing to Google Analytics.
+A swap of `<main>` is a change of the history of the browser, not a load of a
+page, which the container of GTM counts as a page view only with a trigger of
+the changes of the history, or the enhanced measurement of GA4 that has one.
 
 The examples are scripts, and ruff checks them with the exceptions of the
 scripts of `Pyjoyment.Lite` and of the tests, but pyright does not, with

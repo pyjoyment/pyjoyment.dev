@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    %# Google Analytics of production only, so that development sends nothing
+    % if c.app.mode == 'production':
+      <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-5NGTPTM6"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+      </script>
+    % end
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Pyjoyment: glue, run and ship Python applications. Zero dependencies.">

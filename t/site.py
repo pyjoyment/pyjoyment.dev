@@ -12,9 +12,14 @@ import os
 SITE = curfile().dirname().sibling('site')
 
 
-def check(t: Pyjo.Test.Pyjo.object, cache: str) -> None:
+def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
     with subtest('Page'):
         t.get_ok('/').status_is(200).content_type_like(r'^text/html').header_is('Cache-Control', cache)
+        gtm = 'head script[src="https://www.googletagmanager.com/gtm.js?id=GTM-5NGTPTM6"]'
+        if analytics:
+            t.element_exists(gtm).content_like(r"gtag\('js', new Date\(\)\);")
+        else:
+            t.element_exists_not(gtm).content_unlike(r'gtag')
         t.element_exists('h1 img[alt="Pyjoyment"]')
         t.text_is('.tagline', 'Glue, run and ship Python applications. Zero dependencies.')
         t.text_is('.feature[href="/http"]', 'HTTP').text_is('.role[href="/server"]', 'Server')
@@ -80,7 +85,7 @@ def check(t: Pyjo.Test.Pyjo.object, cache: str) -> None:
 
 with subtest('Server'):
     # Nothing is kept in development
-    check(Pyjo.Test.Pyjo.new(SITE.child('app.py')), 'no-cache')
+    check(Pyjo.Test.Pyjo.new(SITE.child('app.py')), 'no-cache', analytics=False)
 
 if os.name == 'nt':
     skip('Lambda functions need pipes that the event loop watches, which Windows does not have')
@@ -88,6 +93,6 @@ else:
     with subtest('Function'):
         env = {'PYJO_MODE': 'production'}
         with Pyjo.App.Lambda.new(function='app.handler', task_root=SITE.to_str(), payload='2.0', env=env) as function:
-            check(Pyjo.Test.Pyjo.new(function), 'public, max-age=3600, s-maxage=604800')
+            check(Pyjo.Test.Pyjo.new(function), 'public, max-age=3600, s-maxage=604800', analytics=True)
 
 done_testing()
