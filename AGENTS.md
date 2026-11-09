@@ -72,9 +72,13 @@ The examples are scripts, and ruff checks them with the exceptions of the
 scripts of `Pyjoyment.Lite` and of the tests, but pyright does not, with
 `ignore` of `pyrightconfig.json`, as they import libraries that the
 environment of `site/` does not have, as Django, Flask, Pyjo-GCP or Pyjo-MCP.
-An example that needs a fix of Pyjoyment or of a module, as Pyjo-AWS, that is
-not released yet takes it from git, with `[tool.uv.sources]` of
-`site/pyproject.toml` at the commit of the fix, until its release.
+The site runs on the Pyjoyment of `uv.lock`, a release whose public layer
+`deploy.py` finds, as 0.3.0, while the examples, which the site shows and does
+not run, may describe the next release, as 0.4.0, before it, and are reviewed
+again after it. A template of the site takes no `% else:` right after the
+`% end` of a loop in an `if`, which Pyjoyment 0.3.0 fails on
+(pyjoyment/Pyjoyment#575, fixed for 0.4.0), so the template of the page puts
+the branch without a loop first.
 A file whose real name is hidden, as `.mcp.json`, is in the directory of its
 scenario without its dot, with its real name as its `title` in the catalog,
 as `list_tree` and `generate lambda-zip` leave the hidden files out. `t/examples.py` compiles each

@@ -53,7 +53,10 @@
     % if current.get('summary'):
       <p><%= current['summary'] %></p>
     % end
-    % if current['tabs']:
+    %# Pyjoyment 0.3.0 takes no % else: right after the % end of a loop in an if, pyjoyment/Pyjoyment#575, until 0.4.0
+    % if not current['tabs']:
+      <p class="soon">Coming soon.</p>
+    % else:
       <div class="tabs" role="tablist" aria-label="Files">
         % for n, tab in enumerate(current['tabs']):
           <button type="button" role="tab" id="tab-<%= n %>" aria-controls="panel-<%= n %>" aria-selected="<%= 'true' if n == 0 else 'false' %>"><%= tab['title'] %></button>
@@ -71,8 +74,6 @@
           <pre><code class="language-<%= tab['language'] %>"><%= tab['code'] %></code></pre>
         </figure>
       % end
-    % else:
-      <p class="soon">Coming soon.</p>
     % end
   </section>
 % end
