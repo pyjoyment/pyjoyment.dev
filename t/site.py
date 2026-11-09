@@ -30,11 +30,12 @@ def check(t: Pyjo.Test.Pyjo.object) -> None:
         t.attr_is('[data-id="role-tester"]', 'href', '/server+tester')
 
         # The third role replaces the first one of the selection
-        t.get_ok('/http/tester+server').status_is(200).text_is('title', 'HTTP Server + Tester | Pyjoyment')
-        t.attr_is('link[rel="canonical"]', 'href', 'https://pyjoyment.dev/http/server+tester')
-        t.attr_is('[data-id="role-client"]', 'href', '/http/server+client')
-        t.attr_is('[data-id="role-tester"]', 'href', '/http/server')
-        t.text_is('.scenario[href="/http/tester+server/lite-app"]', 'Test of an application')
+        t.get_ok('/application/tester+server').status_is(200)
+        t.text_is('title', 'Application Server + Tester | Pyjoyment')
+        t.attr_is('link[rel="canonical"]', 'href', 'https://pyjoyment.dev/application/server+tester')
+        t.attr_is('[data-id="role-client"]', 'href', '/application/server+client')
+        t.attr_is('[data-id="role-tester"]', 'href', '/application/server')
+        t.text_is('.scenario[href="/application/tester+server/lite"]', 'Application with its test')
 
     with subtest('Scenario'):
         t.get_ok('/http/server/lambda').status_is(200).text_is('.scenario[aria-current]', 'AWS Lambda function')
@@ -42,7 +43,7 @@ def check(t: Pyjo.Test.Pyjo.object) -> None:
         t.text_like('#panel-0 code.language-python', r'handler = app\.start\(\)')
         t.element_exists('#panel-1 code.language-bash')
 
-        t.get_ok('/http/server+tester/lite-app').status_is(200)
+        t.get_ok('/application/server+tester/lite').status_is(200)
         t.text_is('#tab-0', 'app.py').text_is('#tab-1', 't/app.py')
 
         # A scenario of the catalog without its files

@@ -1,0 +1,7 @@
+% layout('default')
+% title('Notes')
+<ul>
+  % for id, text in notes.items():
+    <li><%= link_to(text, 'note', {'id': id}) %></li>
+  % end
+</ul>

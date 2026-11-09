@@ -46,30 +46,55 @@ scenarios:
         summary: Routes, actions and templates of Pyjoyment.Lite in one script
       - id: full
         title: Application with controllers
+        summary: The class of the application, its controllers, templates and configuration, as pyjo generate app makes them
+        files:
+          - name: MyApp/__init__.py
+          - name: MyApp/Controller/Notes.py
+          - name: templates/notes/index.html.ep
+          - name: templates/notes/show.html.ep
+          - name: templates/layouts/default.html.ep
+          - name: my_app.yml
+          - name: MyApp/__main__.py
       - id: json-api
         title: JSON API with validation
+        summary: JSON Schema of the type hints, which validates a request with the JSON Pointers of its errors
       - id: websocket
         title: WebSocket
+        summary: An echo server, and its page with a WebSocket in the browser
       - id: sse
         title: Server-Sent Events
+        summary: A countdown, written as it goes, without blocking the other connections
       - id: plugin
         title: Plugin of its own
+        summary: A helper and the hooks of each request, which a plugin adds to the application
+        files:
+          - name: MyPlugins/Timing.py
+          - name: app.py
     client:
       - id: non-blocking
         title: Non-blocking requests of an action
+        summary: Two services at the same time, within a limit of time, while the server goes on
     cli:
       - id: generate
         title: New application with pyjo generate
+        summary: A new application, in one file or with controllers, and the files of its deployment
       - id: commands
         title: Commands of the application
+        summary: Servers, routes, requests without a server and code against the application
     tester:
       - id: test
         title: Test of an application
+        summary: An application and its test in one script, with Pyjo.Test.Pyjo, without a server
       - id: websocket
         title: Test of a WebSocket
+        summary: WebSockets and Server-Sent Events, tested without a server
     server+tester:
       - id: lite
         title: Application with its test
+        summary: A script of Pyjoyment.Lite and the test of its session, as pyjo-prove runs it
+        files:
+          - name: app.py
+          - name: t/app.py
   http:
     server:
       - id: django
@@ -95,13 +120,6 @@ scenarios:
     tester:
       - id: test
         title: Test of HTTP
-    server+tester:
-      - id: lite-app
-        title: Test of an application
-        summary: Requests to an application without a server, with Pyjo.Test.Pyjo
-        files:
-          - name: app.py
-          - name: t/app.py
   html:
     server:
       - id: static
