@@ -173,6 +173,10 @@ scenarios:
       - id: lambda
         title: Lambda function with layers
         summary: An application on the runtime of Python of Lambda, with Pyjoyment and Pyjo-AWS of the public layer, and the credentials of the role of the function
+        files:
+          - name: app.py
+          - name: deploy.sh
+          - name: main.tf
       - id: eks
         title: Pod of EKS with IRSA or Pod Identity
         summary: The credentials of the service account of the pod, and the probes of Kubernetes, whose readiness waits for the bucket
@@ -180,6 +184,7 @@ scenarios:
           - name: app.py
           - name: kubernetes.yaml
           - name: deploy.sh
+          - name: main.tf
       - id: ecs
         title: ECS service
         summary: The credentials of the role of the task, in the image of generate dockerfile, on Fargate
@@ -188,6 +193,7 @@ scenarios:
           - name: task-definition.json
           - name: Dockerfile
           - name: deploy.sh
+          - name: main.tf
       - id: ec2
         title: EC2 instance
         summary: The credentials of the instance profile of IMDSv2, and the secrets of Parameter Store, read once by the manager of prefork under systemd
@@ -196,6 +202,7 @@ scenarios:
           - name: myapp.service
             language: ini
           - name: deploy.sh
+          - name: main.tf
     client:
       - id: sts
         title: STS

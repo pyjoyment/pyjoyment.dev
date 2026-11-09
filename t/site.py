@@ -56,6 +56,10 @@ def check(t: Pyjo.Test.Pyjo.object, cache: str) -> None:
         source = 'https://github.com/pyjoyment/pyjoyment.dev/blob/main/site/examples/http/server/lambda/app.py'
         t.attr_is('#panel-0 a.source', 'href', source).attr_is('#panel-0 a.source', 'target', '_blank')
 
+        # HCL of OpenTofu next to the AWS CLI, with the highlighting of public/js/hcl.js
+        t.get_ok('/aws/server/lambda').status_is(200).text_is('#tab-2', 'main.tf')
+        t.element_exists('#panel-2 code.language-hcl').element_exists('script[src="/js/hcl.js"]')
+
         # The order and the titles of the tabs of the catalog
         t.get_ok('/mcp/cli/claude').status_is(200).text_is('#tab-0', 'claude.sh').text_is('#tab-1', '.mcp.json')
 
