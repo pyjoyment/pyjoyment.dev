@@ -197,19 +197,72 @@ main {
   margin: 1rem 0 0;
 }
 
+/* The bar of a file, above its code: its name, which the tab shows already with JavaScript, and its actions */
 .panel figcaption {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.5rem 0.25rem 1rem;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 0.5rem 0.5rem 0 0;
   font-family: ui-monospace, monospace;
+  font-size: 0.875rem;
 }
 
-/* Without JavaScript the files follow each other with their names */
-.js .panel figcaption {
+.js .panel .name {
+  visibility: hidden;
+}
+
+.actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.actions .copy,
+.actions .source {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-family: system-ui, sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.actions .copy:hover,
+.actions .source:hover {
+  border-color: var(--accent);
+  color: CanvasText;
+}
+
+.actions .copy:focus-visible,
+.actions .source:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline-offset: 2px;
+}
+
+/* The clipboard needs JavaScript */
+.actions .copy {
   display: none;
+}
+
+.js .actions .copy {
+  display: inline-block;
+}
+
+.actions .copy.copied {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .panel pre {
   margin: 0;
   border: 1px solid var(--line);
-  border-radius: 0.5rem;
+  border-radius: 0 0 0.5rem 0.5rem;
   overflow: auto;
 }
 

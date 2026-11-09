@@ -11,6 +11,9 @@ EXAMPLES = curfile().dirname().child('examples')
 # The function gets the requests with the host of its Function URL, so the canonical URL names the host of the site
 HOME = 'https://pyjoyment.dev'
 
+# The files of the examples on GitHub, of main, which the site is deployed from
+SOURCE = 'https://github.com/pyjoyment/pyjoyment.dev/blob/main/site/examples'
+
 # The classes of highlight.js, by the name or the extension of a file, unless the catalog names the language of the file,
 # and plaintext otherwise; the layout loads the languages that the common build of highlight.js does not have
 LANGUAGES = {
@@ -35,6 +38,7 @@ ROLES = {role['id']: role for role in catalog['roles']}
 
 
 def tabs(directory, files: list[dict]) -> list[dict]:
+    source = f'{SOURCE}/{directory.to_rel(EXAMPLES).to_str()}'
     if not directory.is_dir:
         return []
     paths = {
@@ -52,6 +56,7 @@ def tabs(directory, files: list[dict]) -> list[dict]:
             or LANGUAGES.get(paths[file['name']].basename())
             or LANGUAGES.get(paths[file['name']].extname, 'plaintext'),
             'code': paths[file['name']].slurp('UTF-8'),
+            'source': f'{source}/{file["name"]}',
         }
         for file in named
     ]

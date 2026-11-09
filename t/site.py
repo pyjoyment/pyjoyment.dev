@@ -46,6 +46,11 @@ def check(t: Pyjo.Test.Pyjo.object) -> None:
         t.text_like('#panel-0 code.language-python', r'handler = app\.start\(\)')
         t.element_exists('#panel-1 code.language-bash')
 
+        # The actions of a file: the clipboard, and its source on GitHub
+        t.text_is('#panel-0 .copy', 'Copy')
+        source = 'https://github.com/pyjoyment/pyjoyment.dev/blob/main/site/examples/http/server/lambda/app.py'
+        t.attr_is('#panel-0 a.source', 'href', source)
+
         # The order and the titles of the tabs of the catalog
         t.get_ok('/mcp/cli/claude').status_is(200).text_is('#tab-0', 'claude.sh').text_is('#tab-1', '.mcp.json')
 

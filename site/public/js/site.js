@@ -103,10 +103,34 @@ async function navigate(url, push, focus) {
   }
 }
 
+// The code of a file to the clipboard, or selected, for Ctrl-C, where the
+// page has no clipboard, as one of HTTP that is not on localhost
+async function copy(button) {
+  const code = button.closest("figure").querySelector("pre code");
+  try {
+    await navigator.clipboard.writeText(code.textContent);
+  } catch {
+    window.getSelection().selectAllChildren(code);
+    return;
+  }
+  button.textContent = "Copied";
+  button.classList.add("copied");
+  setTimeout(() => {
+    button.textContent = "Copy";
+    button.classList.remove("copied");
+  }, 2000);
+}
+
 document.addEventListener("click", (event) => {
   const tab = event.target.closest("[role=tab]");
   if (tab) {
     select(tab);
+    return;
+  }
+
+  const button = event.target.closest(".copy");
+  if (button) {
+    copy(button);
     return;
   }
 
