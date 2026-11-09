@@ -7,6 +7,7 @@
   --line: color-mix(in srgb, CanvasText 15%, Canvas);
   --radius: 999px;
   --footer: 4rem;
+  --links: 4.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -46,7 +47,8 @@ main {
 }
 
 .tagline {
-  margin: 0.5rem 0 2rem;
+  /* As far from the features as the features from the roles, below them */
+  margin: 0.5rem 0 var(--links);
   color: var(--muted);
   font-size: 1.125rem;
 }
@@ -66,7 +68,7 @@ main {
   position: relative;
   isolation: isolate;
   display: grid;
-  gap: 4.5rem;
+  gap: var(--links);
   margin-bottom: 3rem;
 }
 
