@@ -232,6 +232,11 @@ scenarios:
       - id: cloud-run
         title: Cloud Run
         summary: A script with its dependencies as an image of prefork, on the PORT of Cloud Run, with the token of its service account
+        files:
+          - name: app.py
+          - name: service.yaml
+          - name: deploy.sh
+          - name: main.tf
       - id: gke
         title: Pod of GKE with GSA and KSA or Workload Identity Federation
         summary: Messages to Pub/Sub with the token of the pod, of a service account of Google bound to the one of Kubernetes, or of the latter itself
@@ -239,6 +244,7 @@ scenarios:
           - name: app.py
           - name: kubernetes.yaml
           - name: iam.sh
+          - name: main.tf
       - id: compute
         title: Compute Engine instance
         summary: The secret of the sessions from Secret Manager, with the token of the instance, and prefork under systemd behind the load balancer
@@ -247,6 +253,7 @@ scenarios:
           - name: myapp.service
             language: ini
           - name: instance.sh
+          - name: main.tf
     client:
       - id: jwt
         title: JWT and ID tokens
