@@ -36,11 +36,14 @@ or run in `site/`.
 the command of its arguments otherwise, as `daemon`.
 
 CloudFront caches what the application says with `Cache-Control`, and nothing
-else: the hook `after_static` gives the files of `public/` an hour, as the
-pages of the showcase do after they are rendered, so that the page of an
-exception is not cached, and a response of an action without the header, as
-`/hello`, is not cached. A deployment of new static files is seen after that
-hour, or after an invalidation of the distribution.
+else. In the mode `production`, the one of the function, the hook
+`after_static` and the pages of the showcase, after they are rendered, so that
+the page of an exception is not cached, give `public, max-age=3600,
+s-maxage=604800`: a week of CloudFront, which the invalidation of `/*` of each
+deployment ends, and an hour of the browsers, which it does not reach. In
+another mode, as the development of `daemon` and `reload`, they give
+`no-cache`, so that a change is seen at once. A response of an action without
+the header, as `/hello`, is not cached in any mode.
 
 ### The Showcase
 

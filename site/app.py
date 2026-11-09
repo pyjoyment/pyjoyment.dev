@@ -148,9 +148,8 @@ def page(c, feature: str | None = None, role: str | None = None, scenario: str |
         current=current,
         canonical=HOME + path(feature, role, scenario),
     )
-    # The pages change only with a deployment, which invalidates the distribution, as the files of public/; after the
-    # rendering, so that the page of an exception of a template is not cached
-    c.res.headers.cache_control = 'public, max-age=3600'
+    # After the rendering, so that the page of an exception of a template is not cached
+    cache(c)
 
 
 @helper('badges')
@@ -158,11 +157,20 @@ def badges(c):
     return BADGES
 
 
-# The files of public/ change only with a deployment, so CloudFront and the browsers keep them for an hour, where a
-# response of an action has no Cache-Control and is not cached
+# The pages and the files of public/ change only with a deployment, which invalidates the distribution, so CloudFront
+# keeps them for a week, and the browsers, which the invalidation does not reach, for an hour; in another mode than
+# production nothing is kept, so that a change is seen at once, and a response of an action without Cache-Control, as
+# /hello, is not cached in any mode
+CACHE_CONTROL = 'public, max-age=3600, s-maxage=604800'
+
+
+def cache(c):
+    c.res.headers.cache_control = CACHE_CONTROL if c.app.mode == 'production' else 'no-cache'
+
+
 @hook('after_static')
 def cache_static(c):
-    c.res.headers.cache_control = 'public, max-age=3600'
+    cache(c)
 
 
 @get('/')

@@ -12,9 +12,9 @@ import os
 SITE = curfile().dirname().sibling('site')
 
 
-def check(t: Pyjo.Test.Pyjo.object) -> None:
+def check(t: Pyjo.Test.Pyjo.object, cache: str) -> None:
     with subtest('Page'):
-        t.get_ok('/').status_is(200).content_type_like(r'^text/html').header_is('Cache-Control', 'public, max-age=3600')
+        t.get_ok('/').status_is(200).content_type_like(r'^text/html').header_is('Cache-Control', cache)
         t.element_exists('h1 img[alt="Pyjoyment"]')
         t.text_is('.tagline', 'Glue, run and ship Python applications. Zero dependencies.')
         t.text_is('.feature[href="/http"]', 'HTTP').text_is('.role[href="/server"]', 'Server')
@@ -68,14 +68,15 @@ def check(t: Pyjo.Test.Pyjo.object) -> None:
 
     with subtest('Static'):
         t.get_ok('/css/site.css').status_is(200).content_type_like(r'^text/css')
-        t.header_is('Cache-Control', 'public, max-age=3600')
+        t.header_is('Cache-Control', cache)
 
     with subtest('Not found'):
         t.get_ok('/missing').status_is(404)
 
 
 with subtest('Server'):
-    check(Pyjo.Test.Pyjo.new(SITE.child('app.py')))
+    # Nothing is kept in development
+    check(Pyjo.Test.Pyjo.new(SITE.child('app.py')), 'no-cache')
 
 if os.name == 'nt':
     skip('Lambda functions need pipes that the event loop watches, which Windows does not have')
@@ -83,6 +84,6 @@ else:
     with subtest('Function'):
         env = {'PYJO_MODE': 'production'}
         with Pyjo.App.Lambda.new(function='app.handler', task_root=SITE.to_str(), payload='2.0', env=env) as function:
-            check(Pyjo.Test.Pyjo.new(function))
+            check(Pyjo.Test.Pyjo.new(function), 'public, max-age=3600, s-maxage=604800')
 
 done_testing()
