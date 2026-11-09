@@ -6,6 +6,9 @@
 # them, and the files that it does not list follow in the order of their paths.
 
 features:
+  - id: application
+    title: Application
+    summary: Web applications, from one file to a whole project
   - id: http
     title: HTTP
     summary: HTTP and WebSocket server and client
@@ -36,6 +39,37 @@ roles:
     title: Tester
 
 scenarios:
+  application:
+    server:
+      - id: lite
+        title: Application in one file
+        summary: Routes, actions and templates of Pyjoyment.Lite in one script
+      - id: full
+        title: Application with controllers
+      - id: json-api
+        title: JSON API with validation
+      - id: websocket
+        title: WebSocket
+      - id: sse
+        title: Server-Sent Events
+      - id: plugin
+        title: Plugin of its own
+    client:
+      - id: non-blocking
+        title: Non-blocking requests of an action
+    cli:
+      - id: generate
+        title: New application with pyjo generate
+      - id: commands
+        title: Commands of the application
+    tester:
+      - id: test
+        title: Test of an application
+      - id: websocket
+        title: Test of a WebSocket
+    server+tester:
+      - id: lite
+        title: Application with its test
   http:
     server:
       - id: django
