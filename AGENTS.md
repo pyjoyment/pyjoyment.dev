@@ -65,7 +65,9 @@ page of a link instead of loading it, and draws the links between the selected
 feature and roles in SVG.
 
 The examples are scripts, and ruff checks them with the exceptions of the
-scripts of `Pyjoyment.Lite` and of the tests. highlight.js is in
+scripts of `Pyjoyment.Lite` and of the tests. `t/examples.py` compiles each
+example of Python without running it, as most of them need a cloud or another
+server, so an example that a test cannot run is still Python. highlight.js is in
 `public/vendor/highlight.js`, as its release minified it, which `biome.jsonc`
 leaves out.
 
