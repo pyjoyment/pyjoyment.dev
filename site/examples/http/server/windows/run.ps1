@@ -1,5 +1,5 @@
-# Pyjoyment, and the reactor of Winloop, the fork of uvloop for Windows
-uv add Pyjoyment Pyjo-Reactor-Winloop
+# Pyjoyment, and the reactor of Winloop, the fork of uvloop for Windows, in the dependencies of the script
+uv add --script app.py Pyjoyment Pyjo-Reactor-Winloop
 
 # Threads instead of the processes of prefork, which needs fork, that Windows does not have
 $env:PYJO_REACTOR = 'Pyjo.Reactor.Winloop'
