@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "notes": {
+      "type": "http",
+      "url": "${NOTES_URL:-http://127.0.0.1:3000/mcp}"
+    },
+    "project": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "app.py", "stdio"]
+    }
+  }
+}

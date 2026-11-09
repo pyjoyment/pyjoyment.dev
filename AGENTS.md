@@ -65,7 +65,15 @@ page of a link instead of loading it, and draws the links between the selected
 feature and roles in SVG.
 
 The examples are scripts, and ruff checks them with the exceptions of the
-scripts of `Pyjoyment.Lite` and of the tests. `t/examples.py` compiles each
+scripts of `Pyjoyment.Lite` and of the tests, but pyright does not, with
+`ignore` of `pyrightconfig.json`, as they import libraries that the
+environment of `site/` does not have, as Django, Flask, Pyjo-GCP or Pyjo-MCP.
+An example that needs a fix of Pyjoyment or of a module, as Pyjo-AWS, that is
+not released yet takes it from git, with `[tool.uv.sources]` of
+`site/pyproject.toml` at the commit of the fix, until its release.
+A file whose real name is hidden, as `.mcp.json`, is in the directory of its
+scenario without its dot, with its real name as its `title` in the catalog,
+as `list_tree` and `generate lambda-zip` leave the hidden files out. `t/examples.py` compiles each
 example of Python without running it, as most of them need a cloud or another
 server, so an example that a test cannot run is still Python. highlight.js is in
 `public/vendor/highlight.js`, as its release minified it, which `biome.jsonc`

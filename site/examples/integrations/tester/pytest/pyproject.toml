@@ -1,0 +1,13 @@
+[project]
+name = "myapp"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["Pyjoyment"]
+
+[dependency-groups]
+dev = ["pytest>=9", "pytest-xdist>=3"]
+
+# The tests of pytest in tests/, and the test scripts of pyjo-prove in t/, which the plugin of Pyjoyment runs
+[tool.pytest.ini_options]
+testpaths = ["t", "tests"]
+pythonpath = ["."]

@@ -1,0 +1,11 @@
+# m h dom mon dow  command
+PYJO_MODE=production
+PYJO_LOG_FORMAT=plain
+MAILTO=ops@example.com
+
+# The helper, without a server, which eval calls on the application; an exception exits with 1, and cron mails its
+# output
+30 3 * * *  cd /srv/myapp && .venv/bin/python app.py eval -v 'app.purge(days=7)'
+
+# The action, also without a server, with the CSS selector or the JSON Pointer of its response
+0 * * * *   cd /srv/myapp && .venv/bin/python app.py get '/admin/purge?days=30' /purged >> /var/log/myapp/purge.log 2>&1

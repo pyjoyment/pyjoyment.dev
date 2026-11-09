@@ -1,0 +1,20 @@
+[Unit]
+Description=myapp, a Pyjoyment application
+Requires=myapp.socket
+After=network.target myapp.socket
+
+[Service]
+User=myapp
+WorkingDirectory=/srv/myapp
+RuntimeDirectory=myapp
+# The levels of journald instead of the time, which journald adds
+Environment=PYJO_MODE=production PYJO_LOG_SHORT=1
+# The socket of systemd, the file descriptor 3, for the workers of prefork
+ExecStart=/srv/myapp/.venv/bin/python app.py prefork -w 4 -l http://*?fd=3 -P /run/myapp/prefork.pid
+# TERM to the manager only, which stops its workers gracefully, as they finish their requests
+KillMode=mixed
+TimeoutStopSec=30
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

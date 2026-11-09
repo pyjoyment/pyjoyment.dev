@@ -1,0 +1,43 @@
+# The service account of the role, whose annotation gives the pods the web identity of IRSA; with EKS Pod Identity, the
+# association of the service account with the role, as in deploy.sh, and no annotation
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: files
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/files
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: files
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: files
+  template:
+    metadata:
+      labels:
+        app: files
+    spec:
+      serviceAccountName: files
+      containers:
+        - name: files
+          image: 123456789012.dkr.ecr.eu-central-1.amazonaws.com/files:1.0
+          env:
+            - name: BUCKET
+              value: my-files
+            # The region, which IRSA sets and EKS Pod Identity does not
+            - name: AWS_REGION
+              value: eu-central-1
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /livez
+              port: 3000
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 3000

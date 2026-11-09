@@ -1,0 +1,18 @@
+[Unit]
+Description=myapp
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=myapp
+WorkingDirectory=/opt/myapp
+# Behind the load balancer of Google Cloud, whose X-Forwarded-For and X-Forwarded-Proto the server takes from the
+# addresses of its proxies only
+ExecStart=/opt/myapp/.venv/bin/python app.py prefork -m production -l http://*:8080 -p 35.191.0.0/16 -p 130.211.0.0/22
+# TERM stops the workers gracefully, within 25 seconds
+TimeoutStopSec=30
+Environment=PYJO_LOG_SHORT=1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

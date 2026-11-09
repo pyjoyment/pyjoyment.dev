@@ -1,0 +1,23 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: myapp
+spec:
+  template:
+    spec:
+      # The service account of the token of the metadata server, with the role Storage Object Viewer on the bucket
+      serviceAccountName: myapp@myproject.iam.gserviceaccount.com
+      containers:
+        - image: europe-west1-docker.pkg.dev/myproject/apps/myapp
+          env:
+            - name: BUCKET
+              value: mybucket
+            # The log of JSON, which Cloud Logging reads with its levels
+            - name: PYJO_LOG_FORMAT
+              value: json
+          startupProbe:
+            httpGet:
+              path: /readyz
+          livenessProbe:
+            httpGet:
+              path: /livez
