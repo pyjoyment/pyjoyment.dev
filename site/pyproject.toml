@@ -12,6 +12,11 @@ dependencies = ["Pyjoyment>=0.3.0"]
 [tool.uv]
 package = false
 
+# Until a release with the fix of https://github.com/pyjoyment/Pyjoyment/issues/575, for the tests: deploy.py
+# finds no layer of this version, and the layer of a release runs the function anyway
+[tool.uv.sources]
+pyjoyment = { git = "https://github.com/pyjoyment/Pyjoyment", rev = "d7537d45b9cc86b309c0519acb75ae898eca732f" }
+
 # The Pyjo-AWS of deploy.py, which "uv export --no-dev" of "generate lambda-zip" leaves out of the function, whose
 # layer of Pyjoyment has one of its own
 [dependency-groups]
