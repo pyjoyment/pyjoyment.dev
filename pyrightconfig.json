@@ -1,5 +1,6 @@
 {
   "venvPath": "site",
   "venv": ".venv",
-  "typeCheckingMode": "off"
+  "typeCheckingMode": "off",
+  "ignore": ["site/examples"]
 }
