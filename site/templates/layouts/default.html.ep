@@ -3,8 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= title %></title>
+    <meta name="description" content="Pyjoyment: glue, run and ship Python applications. Zero dependencies.">
+    <title><%= c.title() %></title>
+    <link rel="canonical" href="<%= canonical %>">
+    <link rel="icon" href="<%= url_for('/favicon.svg') %>" type="image/svg+xml">
+    <link rel="stylesheet" href="<%= url_for('/vendor/highlight.js/github.min.css') %>" media="(prefers-color-scheme: light)">
+    <link rel="stylesheet" href="<%= url_for('/vendor/highlight.js/github-dark.min.css') %>" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="<%= url_for('/css/site.css') %>">
+    <script src="<%= url_for('/vendor/highlight.js/highlight.min.js') %>" defer></script>
+    <script src="<%= url_for('/js/site.js') %>" defer></script>
   </head>
   <body>
     <main><%= content() %></main>

@@ -1,0 +1,206 @@
+# The features and the roles of the page, in the order of their buttons, and
+# the scenarios of each feature and roles. The roles of a pair are joined with
+# "+" in the order of the roles here, as "server+tester". The files of a
+# scenario are in examples/<feature>/<roles>/<scenario>/, and a scenario
+# without them is shown as coming soon; "files" orders its tabs and names
+# them, and the files that it does not list follow in the order of their paths.
+
+features:
+  - id: http
+    title: HTTP
+    summary: HTTP and WebSocket server and client
+  - id: html
+    title: HTML
+    summary: Templates, DOM and CSS selectors
+  - id: aws
+    title: AWS
+    summary: Amazon Web Services without boto3
+  - id: gcp
+    title: GCP
+    summary: Google Cloud without its client libraries
+  - id: mcp
+    title: MCP
+    summary: Model Context Protocol servers and clients
+  - id: integrations
+    title: Integrations
+    summary: Glue with other frameworks and servers
+
+roles:
+  - id: server
+    title: Server
+  - id: client
+    title: Client
+  - id: cli
+    title: CLI
+  - id: tester
+    title: Tester
+
+scenarios:
+  http:
+    server:
+      - id: django
+        title: Django application
+      - id: lambda
+        title: AWS Lambda function
+        summary: The same application as a server and as an event function behind a Function URL
+      - id: static
+        title: Static file server
+      - id: unix
+        title: Unix server
+      - id: windows
+        title: Windows server
+    client:
+      - id: blocking
+        title: Blocking user agent
+      - id: non-blocking
+        title: Non-blocking user agent
+    cli:
+      - id: one-liners
+        title: GET and POST one-liners
+        summary: Requests from the command line, with the functions of python -m Pyjo
+    tester:
+      - id: test
+        title: Test of HTTP
+    server+tester:
+      - id: lite-app
+        title: Test of an application
+        summary: Requests to an application without a server, with Pyjo.Test.Pyjo
+        files:
+          - name: app.py
+          - name: t/app.py
+  html:
+    server:
+      - id: static
+        title: Static files
+      - id: templates
+        title: Dynamic templates
+    client:
+      - id: dom-css
+        title: DOM and CSS selectors
+        summary: A page parsed and searched with Pyjo.DOM
+    cli:
+      - id: one-liners
+        title: HTML and CSS one-liners
+    tester:
+      - id: test
+        title: Test of HTML
+  aws:
+    server:
+      - id: lambda
+        title: Lambda function with layers
+      - id: eks
+        title: Pod of EKS with IRSA or Pod Identity
+      - id: ecs
+        title: ECS service
+      - id: ec2
+        title: EC2 instance
+    client:
+      - id: sts
+        title: STS
+      - id: s3
+        title: S3
+      - id: kms
+        title: KMS
+    cli:
+      - id: sts-one-liner
+        title: STS one-liner with ~/.aws
+      - id: regions
+        title: Script with getopt that lists the regions
+    tester:
+      - id: test
+        title: Test of AWS
+  gcp:
+    server:
+      - id: cloud-run
+        title: Cloud Run
+      - id: gke
+        title: Pod of GKE with GSA and KSA or Workload Identity Federation
+      - id: compute
+        title: Compute Engine instance
+    client:
+      - id: jwt
+        title: JWT
+      - id: gcs
+        title: GCS
+      - id: kms
+        title: KMS
+    cli:
+      - id: sts-one-liner
+        title: STS one-liner with gcloud auth application-default
+      - id: regions
+        title: Script with getopt that lists the regions
+    tester:
+      - id: test
+        title: Test of GCP
+  mcp:
+    server:
+      - id: http
+        title: MCP over HTTP
+      - id: stdio
+        title: MCP over stdio
+    client:
+      - id: http
+        title: Connection to MCP over HTTP
+      - id: stdio
+        title: Connection to MCP over stdio
+    cli:
+      - id: client
+        title: MCP client script with getopt
+      - id: skills
+        title: Skills of Pyjoyment
+      - id: claude
+        title: Pyjo-MCP server in Claude
+    tester:
+      - id: test
+        title: Test of MCP
+  integrations:
+    server:
+      - id: django
+        title: Django application on a Pyjo server
+      - id: asyncio
+        title: asyncio application on a Pyjo server
+      - id: lambda
+        title: Lambda function on a Pyjo server
+      - id: cgi
+        title: CGI program on a Pyjo server
+      - id: fastcgi
+        title: FastCGI application on a Pyjo server
+      - id: wsgi
+        title: WSGI application on a Pyjo server
+      - id: asgi
+        title: ASGI application on a Pyjo server
+      - id: cli
+        title: CLI application on a Pyjo server
+    client:
+      - id: asyncio
+        title: Pyjo application on an asyncio server
+      - id: gunicorn
+        title: Pyjo application on gunicorn
+      - id: uvicorn
+        title: Pyjo application on uvicorn
+      - id: gevent
+        title: Pyjo application on gevent
+      - id: twisted
+        title: Pyjo application on Twisted
+      - id: django
+        title: Pyjo application in Django
+      - id: lambda
+        title: Pyjo application on Lambda
+    cli:
+      - id: virtualenv
+        title: Run from a virtualenv
+      - id: uv
+        title: Run with uv
+      - id: crontab
+        title: Run from crontab
+      - id: systemd
+        title: Run as a systemd service
+    tester:
+      - id: pytest
+        title: pytest
+      - id: unittest
+        title: unittest
+      - id: github
+        title: GitHub Actions
+      - id: junit
+        title: JUnit reports

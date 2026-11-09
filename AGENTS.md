@@ -36,10 +36,38 @@ or run in `site/`.
 the command of its arguments otherwise, as `daemon`.
 
 CloudFront caches what the application says with `Cache-Control`, and nothing
-else: the hook `after_static` gives the files of `public/` an hour, and a
-response of an action without the header is not cached. A deployment of new
-static files is seen after that hour, or after an invalidation of the
-distribution.
+else: the hook `after_static` gives the files of `public/` an hour, as the
+pages of the showcase do after they are rendered, so that the page of an
+exception is not cached, and a response of an action without the header, as
+`/hello`, is not cached. A deployment of new static files is seen after that
+hour, or after an invalidation of the distribution.
+
+### The Showcase
+
+The page is a showcase of Pyjoyment: the buttons of the features and of the
+roles, a scenario of the feature and the roles, and the tabs of the files of
+the scenario. `site/examples/catalog.yaml` lists the features, the roles and
+the scenarios of each feature and role, or pair of roles, under the key of the
+roles joined with `+` in the order of the catalog, as `server+tester`, and the
+files of a scenario are in `site/examples/<feature>/<roles>/<scenario>/`. A
+scenario without its directory is shown as coming soon, and a feature or a
+role that leads to no scenario is dimmed. The application reads the catalog
+and the files at its start, and fails on a key of the catalog that is not in
+its order, or a file of `files` that is missing.
+
+Each selection is a page of its own, `/http`, `/server`, `/http/server`,
+`/http/server/lambda`, rendered by `page` of `site/app.py`, so the page works
+without JavaScript and a test reads it as any page. The URL keeps the roles in
+the order of their selection, as `/http/tester+server`, so the third role
+replaces the first one, and `<link rel="canonical">` names the roles in the
+order of the catalog. `public/js/site.js` swaps `<main>` with the one of the
+page of a link instead of loading it, and draws the links between the selected
+feature and roles in SVG.
+
+The examples are scripts, and ruff checks them with the exceptions of the
+scripts of `Pyjoyment.Lite` and of the tests. highlight.js is in
+`public/vendor/highlight.js`, as its release minified it, which `biome.jsonc`
+leaves out.
 
 The function gets the requests with the host of its Function URL, not
 `pyjoyment.dev`, as the Function URL takes the requests of its own host only,
