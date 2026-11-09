@@ -1,0 +1,18 @@
+% layout('default')
+% title('Shopping list')
+% if (added := flash('added')):
+  <p class="notice">Added <%= added %>.</p>
+% end
+<ul>
+  % for item in items:
+    %= include('_item', item=item)
+  % end
+</ul>
+%= form_for('add', begin
+  %= csrf_field()
+  %= text_field('item', placeholder='Butter')
+  %= submit_button('Add')
+% end)
+% if (error := validation().error('item')):
+  <p class="error">The item is <%= error[0] %>.</p>
+% end

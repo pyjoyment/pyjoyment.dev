@@ -1,0 +1,14 @@
+upstream <%= server_name %> {
+% for upstream in upstreams:
+  server <%= upstream %>;
+% end
+}
+
+server {
+  listen 80;
+  server_name <%= server_name %>;
+
+  location / {
+    proxy_pass http://<%= server_name %>;
+  }
+}

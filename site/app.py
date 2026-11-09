@@ -15,7 +15,9 @@ HOME = 'https://pyjoyment.dev'
 # and plaintext otherwise; the layout loads the languages that the common build of highlight.js does not have
 LANGUAGES = {
     'Dockerfile': 'dockerfile',
+    'css': 'css',
     'ep': 'xml',
+    'html': 'xml',
     'ini': 'ini',
     'js': 'javascript',
     'json': 'json',

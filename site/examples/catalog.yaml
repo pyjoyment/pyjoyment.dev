@@ -15,7 +15,7 @@ features:
     summary: HTTP and WebSocket server and client
   - id: html
     title: HTML
-    summary: Templates, DOM and CSS selectors
+    summary: HTML and XML, with templates, the DOM and CSS selectors
   - id: aws
     title: AWS
     summary: Amazon Web Services without boto3
@@ -137,18 +137,45 @@ scenarios:
     server:
       - id: static
         title: Static files
+        summary: The pages and the files of public/ as they are, which the browsers keep for an hour
+        files:
+          - name: app.py
+          - name: public/index.html
+          - name: public/css/site.css
       - id: templates
         title: Dynamic templates
+        summary: Templates of Embedded Python with a layout, a partial template and a form with CSRF and validation
+        files:
+          - name: app.py
+          - name: templates/index.html.ep
+          - name: templates/_item.html.ep
+          - name: templates/layouts/default.html.ep
+      - id: xml-feed
+        title: XML feed
+        summary: An Atom feed of a template of XML, which escapes its values as one of HTML does
     client:
       - id: dom-css
         title: DOM and CSS selectors
         summary: A page parsed and searched with Pyjo.DOM
+      - id: aws-xml
+        title: XML of an AWS API
+        summary: The XML of a response of S3 queried with CSS selectors, and the XML of a request from a template
     cli:
       - id: one-liners
         title: HTML and CSS one-liners
+        summary: The elements of a page by their CSS selectors, of a URL, the standard input or the command line
+      - id: template
+        title: Templates of any text
+        summary: A configuration of nginx from a template of Embedded Python, without a server and the escaping of HTML
+        files:
+          - name: render.py
+          - name: site.conf.ep
+            language: nginx
+          - name: render.sh
     tester:
       - id: test
         title: Test of HTML
+        summary: The elements, the texts and the attributes of a page, by their CSS selectors
   aws:
     server:
       - id: lambda
