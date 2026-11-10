@@ -31,8 +31,7 @@ jobs:
         with:
           version: 2026.11.4 # datasource=github-releases depName=jdx/mise
 
-      # Without brotli, the generator writes no .br, and a client of brotli
-      # gets .gz, which CloudFront does not compress again
+      # The compressor of br, without which --compress-encoding br fails
       - name: Install brotli
         run: command -v brotli || { sudo apt-get update && sudo apt-get install -y --no-install-recommends brotli; }
 
@@ -41,6 +40,7 @@ jobs:
         run: >-
           uv run python app.py generate lambda-zip --arch arm64 --runtime python3.15 --no-layer
           --compress public --compress Pyjoyment/resources/public
+          --compress-encoding br --compress-encoding gzip
 
       - name: Upload the function
         uses: actions/upload-artifact@v7

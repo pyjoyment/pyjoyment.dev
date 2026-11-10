@@ -17,7 +17,7 @@ wheels = [
 [[package]]
 name = "pyjoyment"
 version = "0.3.1.dev1"
-source = { git = "https://github.com/pyjoyment/Pyjoyment?rev=652846b6fbe2a782b7fe8ac74fbbda0a263d2bb2#652846b6fbe2a782b7fe8ac74fbbda0a263d2bb2" }
+source = { git = "https://github.com/pyjoyment/Pyjoyment?rev=2eac77127d611b703fe8f852a23589883b0c2da0#2eac77127d611b703fe8f852a23589883b0c2da0" }
 
 [[package]]
 name = "pyjoyment-dev"
@@ -33,7 +33,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pyjoyment", git = "https://github.com/pyjoyment/Pyjoyment?rev=652846b6fbe2a782b7fe8ac74fbbda0a263d2bb2" }]
+requires-dist = [{ name = "pyjoyment", git = "https://github.com/pyjoyment/Pyjoyment?rev=2eac77127d611b703fe8f852a23589883b0c2da0" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pyjo-aws", specifier = ">=0.1.0" }]

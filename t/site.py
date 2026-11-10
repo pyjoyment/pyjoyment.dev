@@ -79,6 +79,13 @@ def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
         t.get_ok('/css/site.css').status_is(200).content_type_like(r'^text/css')
         t.header_is('Cache-Control', cache)
 
+        # A revalidation keeps the Cache-Control of the file
+        etag = t.tx.res.headers.etag
+        t.get_ok('/css/site.css', {'If-None-Match': etag}).status_is(304).header_is('Cache-Control', cache)
+
+        # The files of Pyjoyment, as the logo, too
+        t.get_ok('/pyjo/logo-black-4x.svg').status_is(200).header_is('Cache-Control', cache)
+
     with subtest('Not found'):
         t.get_ok('/missing').status_is(404)
 

@@ -14,7 +14,7 @@ package = false
 # Pyjoyment of main, for the precompressed static files of "generate lambda-zip --compress" and of Pyjoyment.Static,
 # until a release has them
 [tool.uv.sources]
-Pyjoyment = { git = "https://github.com/pyjoyment/Pyjoyment", rev = "652846b6fbe2a782b7fe8ac74fbbda0a263d2bb2" }
+Pyjoyment = { git = "https://github.com/pyjoyment/Pyjoyment", rev = "2eac77127d611b703fe8f852a23589883b0c2da0" }
 
 # The Pyjo-AWS of deploy.py, which "uv export --no-dev" of "generate lambda-zip" leaves out of the function
 [dependency-groups]

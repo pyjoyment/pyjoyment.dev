@@ -155,7 +155,7 @@ def page(c, feature: str | None = None, role: str | None = None, scenario: str |
         canonical=HOME + path(feature, role, scenario),
     )
     # After the rendering, so that the page of an exception of a template is not cached
-    cache(c)
+    c.res.headers.cache_control = cache_control(c)
 
 
 @helper('badges')
@@ -170,13 +170,12 @@ def badges(c):
 CACHE_CONTROL = 'public, max-age=3600, s-maxage=604800'
 
 
-def cache(c):
-    c.res.headers.cache_control = CACHE_CONTROL if c.app.mode == 'production' else 'no-cache'
+def cache_control(c):
+    return CACHE_CONTROL if c.app.mode == 'production' else 'no-cache'
 
 
-@hook('after_static')
-def cache_static(c):
-    cache(c)
+# A function, not a value, as the mode of -m is set after this script is loaded; Pyjoyment.Static gives it to a 304 too
+app.static.cache_control = lambda c, rel: cache_control(c)
 
 
 @get('/')
