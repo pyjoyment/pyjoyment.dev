@@ -36,9 +36,10 @@ or run in `site/`.
 the command of its arguments otherwise, as `daemon`.
 
 CloudFront caches what the application says with `Cache-Control`, and nothing
-else. In the mode `production`, the one of the function, the hook
-`after_static` and the pages of the showcase, after they are rendered, so that
-the page of an exception is not cached, give `public, max-age=3600,
+else. In the mode `production`, the one of the function, the static files,
+with `cache_control` of `Pyjoyment.Static`, also in a `304`, and the pages of
+the showcase, after they are rendered, so that the page of an exception is not
+cached, give `public, max-age=3600,
 s-maxage=604800`: a week of CloudFront, which the invalidation of `/*` of each
 deployment ends, and an hour of the browsers, which it does not reach. In
 another mode, as the development of `daemon` and `reload`, they give
@@ -115,19 +116,20 @@ public layer of Pyjoyment-Lambda-Layers has, for the runtime of Python of
 Lambda, as the workflow Build does:
 
 ```sh
-mise exec -- uv run --directory site python app.py generate lambda-zip --arch arm64 --runtime python3.15 --no-layer --compress public --compress Pyjoyment/resources/public
+mise exec -- uv run --directory site python app.py generate lambda-zip --arch arm64 --runtime python3.15 --no-layer --compress public --compress Pyjoyment/resources/public --compress-encoding br --compress-encoding gzip
 ```
 
 The runtime, `python3.15`, and the architecture, `arm64`, are the same in the
 workflow and in `tofu/`. `--compress` writes the precompressed variants of
-the static files, `.br`, `.zst` and `.gz`, which `Pyjoyment.Static` serves
-with `Vary: Accept-Encoding`, of `public/` and of the resources of Pyjoyment,
-as the logo, which are in the function with Pyjoyment. The `.br` needs the
-command `brotli`, which the workflow installs if the runner has none: without
-it, a client of brotli gets `.gz`, which CloudFront, whose `compress` takes
-only a response without `Content-Encoding`, does not compress again.
-CloudFront forwards `Accept-Encoding` normalized to `br` and `gzip`, so the
-`.zst` are in the function and are not served through it.
+the static files, which `Pyjoyment.Static` serves with
+`Vary: Accept-Encoding`, of `public/` and of the resources of Pyjoyment, as
+the logo, which are in the function with Pyjoyment. `--compress-encoding`
+takes `.br` and `.gz` only, as CloudFront forwards `Accept-Encoding`
+normalized to `br` and `gzip`, so a `.zst` would never be served through it.
+The `.br` needs the command `brotli`, which the workflow installs if the
+runner has none, and without which the generator fails, instead of giving
+`.gz` to a client of brotli, which CloudFront, whose `compress` takes only a
+response without `Content-Encoding`, does not compress again.
 
 After a release of Pyjoyment with the precompressed static files and its
 layers, `uv.lock` takes it from PyPI, and the build may take
