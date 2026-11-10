@@ -107,7 +107,8 @@ def main(args: list[str]) -> None:
     # A ZIP of --no-layer has Pyjoyment of its own, which no layer has, as one of main before its release
     own = 'Pyjoyment/__init__.py' in zipfile.ZipFile(path.to_str()).namelist()
     config = configuration(aws, function)
-    current = [item['Arn'] for item in config.get('Layers', [])]
+    # Layers is null for a function without layers, not missing
+    current = [item['Arn'] for item in config.get('Layers') or []]
     arns = [] if own else [layer(ua, config['Runtime'])]
 
     # The layer before the code, as the code of a newer Pyjoyment needs it, where a newer layer serves the code before;
