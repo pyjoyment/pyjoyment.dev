@@ -14,7 +14,8 @@ permissions:
 
 jobs:
   # function.zip of the function, for the runtime and the architecture of
-  # tofu/, without Pyjoyment, which the public layer has.
+  # tofu/, with Pyjoyment of main, which no public layer has, and the
+  # precompressed variants of the static files, of the site and of Pyjoyment.
   build:
     name: Build
 
@@ -30,9 +31,16 @@ jobs:
         with:
           version: 2026.11.4 # datasource=github-releases depName=jdx/mise
 
+      # Without brotli, the generator writes no .br, and a client of brotli
+      # gets .gz, which CloudFront does not compress again
+      - name: Install brotli
+        run: command -v brotli || { sudo apt-get update && sudo apt-get install -y --no-install-recommends brotli; }
+
       - name: Build the function
         working-directory: site
-        run: uv run python app.py generate lambda-zip --arch arm64 --runtime python3.15 --function-only
+        run: >-
+          uv run python app.py generate lambda-zip --arch arm64 --runtime python3.15 --no-layer
+          --compress public --compress Pyjoyment/resources/public
 
       - name: Upload the function
         uses: actions/upload-artifact@v7

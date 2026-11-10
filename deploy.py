@@ -5,12 +5,13 @@ deploy.py - Deployment of pyjoyment.dev
 
     python deploy.py --distribution E3L54LJQ60FS5U site/dist/function.zip
 
-Updates the function with ``function.zip`` of ``generate lambda-zip
---function-only`` and the layer of Pyjoyment of the version of ``uv.lock``,
-for the runtime of the function, and invalidates the files that CloudFront
-keeps, with :mod:`Pyjo.AWS.Client`, with the credentials that the AWS CLI
-finds, of the environment, as those of the OIDC of GitHub Actions, or of a
-profile of ``AWS_PROFILE``.
+Updates the function with ``function.zip`` of ``generate lambda-zip``, and
+its layer: the one of Pyjoyment of the version of ``uv.lock``, for the
+runtime of the function, for a ZIP of ``--function-only``, or none for a ZIP
+with Pyjoyment of its own, of ``--no-layer``, and invalidates the files that
+CloudFront keeps, with :mod:`Pyjo.AWS.Client`, with the credentials that the
+AWS CLI finds, of the environment, as those of the OIDC of GitHub Actions, or
+of a profile of ``AWS_PROFILE``.
 """
 
 import Pyjo.AWS.Client
@@ -28,6 +29,7 @@ from Pyjo.Util import b64_encode, getopt
 import importlib.metadata
 import sys
 import time
+import zipfile
 
 from typing import Any
 
@@ -64,6 +66,15 @@ def layer(ua: Pyjo.UserAgent.object, runtime: str) -> str:
     return arn
 
 
+def layers(aws: Pyjo.AWS.Client.object, function: str, arns: list[str], log: Pyjo.Log.object) -> None:
+    call = Pyjo.AWS.Protocol.RestJSON.new(
+        'PUT', f'/2015-03-31/functions/{function}/configuration', json={'Layers': arns}
+    )
+    aws.call(call)
+    updated(aws, function)
+    log.info(f'[layer] {function} {" ".join(arns) or "none"}')
+
+
 # The XML of the batch, with the elements of new_tag, which escapes their text, in XML, which keeps the case of their
 # names
 def invalidation(reference: str) -> Pyjo.DOM.object:
@@ -93,17 +104,16 @@ def main(args: list[str]) -> None:
     dom = sts.call(Pyjo.AWS.Protocol.Query.new('GetCallerIdentity', version='2011-06-15'))
     log.info(f'[identity] {dom.at("Account").text} {dom.at("Arn").text}')
 
+    # A ZIP of --no-layer has Pyjoyment of its own, which no layer has, as one of main before its release
+    own = 'Pyjoyment/__init__.py' in zipfile.ZipFile(path.to_str()).namelist()
     config = configuration(aws, function)
-    arn = layer(ua, config['Runtime'])
+    current = [item['Arn'] for item in config.get('Layers', [])]
+    arns = [] if own else [layer(ua, config['Runtime'])]
 
-    # The layer before the code, as the code of a newer Pyjoyment needs it, where a newer layer serves the code before
-    if [current['Arn'] for current in config.get('Layers', [])] != [arn]:
-        call = Pyjo.AWS.Protocol.RestJSON.new(
-            'PUT', f'/2015-03-31/functions/{function}/configuration', json={'Layers': [arn]}
-        )
-        aws.call(call)
-        updated(aws, function)
-        log.info(f'[layer] {function} {arn}')
+    # The layer before the code, as the code of a newer Pyjoyment needs it, where a newer layer serves the code before;
+    # a code with Pyjoyment of its own goes before the layer is removed, as the code before needs the layer
+    if not own and current != arns:
+        layers(aws, function, arns, log)
 
     call = Pyjo.AWS.Protocol.RestJSON.new(
         'PUT', f'/2015-03-31/functions/{function}/code', json={'ZipFile': b64_encode(path.slurp(), '')}
@@ -111,6 +121,9 @@ def main(args: list[str]) -> None:
     aws.call(call)
     config = updated(aws, function)
     log.info(f'[code] {function} {config["CodeSha256"]}')
+
+    if own and current != arns:
+        layers(aws, function, arns, log)
 
     # The files of public/ that CloudFront keeps for an hour; the wildcard is one path of the free thousand of a month
     if opts.distribution:

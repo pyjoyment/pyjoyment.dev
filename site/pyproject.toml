@@ -3,8 +3,7 @@ name = "pyjoyment-dev"
 version = "0"
 description = "The website of Pyjoyment, pyjoyment.dev."
 requires-python = ">=3.12"
-# The Pyjoyment of the tests and of the build, whose version the public layer of the function is to have, which Renovate
-# bumps in uv.lock
+# The Pyjoyment of the tests, of the build and of the function, which has it in its ZIP
 dependencies = ["Pyjoyment>=0.3.0"]
 
 # Not a package: the application is the script app.py, which "generate lambda-zip" puts into the function with the other
@@ -12,7 +11,11 @@ dependencies = ["Pyjoyment>=0.3.0"]
 [tool.uv]
 package = false
 
-# The Pyjo-AWS of deploy.py, which "uv export --no-dev" of "generate lambda-zip" leaves out of the function, whose
-# layer of Pyjoyment has one of its own
+# Pyjoyment of main, for the precompressed static files of "generate lambda-zip --compress" and of Pyjoyment.Static,
+# until a release has them
+[tool.uv.sources]
+Pyjoyment = { git = "https://github.com/pyjoyment/Pyjoyment", rev = "652846b6fbe2a782b7fe8ac74fbbda0a263d2bb2" }
+
+# The Pyjo-AWS of deploy.py, which "uv export --no-dev" of "generate lambda-zip" leaves out of the function
 [dependency-groups]
 dev = ["Pyjo-AWS>=0.1.0"]
