@@ -29,7 +29,7 @@ jobs:
       - name: Set up mise
         uses: jdx/mise-action@v5
         with:
-          version: 2026.11.4 # datasource=github-releases depName=jdx/mise
+          version: 2026.11.8 # datasource=github-releases depName=jdx/mise
 
       # The compressor of br, without which --compress-encoding br fails
       - name: Install brotli
@@ -80,7 +80,7 @@ jobs:
       - name: Set up mise
         uses: jdx/mise-action@v5
         with:
-          version: 2026.11.4 # datasource=github-releases depName=jdx/mise
+          version: 2026.11.8 # datasource=github-releases depName=jdx/mise
 
       - name: Download the function
         uses: actions/download-artifact@v8
