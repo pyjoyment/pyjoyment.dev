@@ -96,6 +96,9 @@ lint:
           run_from: ${root_or_parent_with(biome.jsonc)}
       run_timeout: 1m
   enabled:
+    - hadolint@2.15.1
+    - shellcheck@0.11.0
+    - shfmt@3.14.1
     - tflint@0.66.0
     - actionlint@1.17.1
     # Renovate bumps it, and Biome Migrate migrates biome.jsonc on its branch;
@@ -104,7 +107,7 @@ lint:
     - git-diff-check
     - pyright@1.1.414
     # The format command of ruff is disabled in the plugin by default
-    - ruff@0.17.4:
+    - ruff@0.17.5:
         commands:
           - lint
           - format
