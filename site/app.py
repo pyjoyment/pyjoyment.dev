@@ -204,7 +204,6 @@ PERMISSIONS_POLICY = ', '.join(
                 'accelerometer',
                 'autoplay',
                 'bluetooth',
-                'browsing-topics',
                 'camera',
                 'display-capture',
                 'encrypted-media',
