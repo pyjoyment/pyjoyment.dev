@@ -14,8 +14,8 @@ permissions:
 
 jobs:
   # function.zip of the function, for the runtime and the architecture of
-  # tofu/, with Pyjoyment of main, which no public layer has, and the
-  # precompressed variants of the static files, of the site and of Pyjoyment.
+  # tofu/, without Pyjoyment, which its public layer gives the function, and
+  # with the precompressed variants of the static files of the site.
   build:
     name: Build
 
@@ -38,8 +38,8 @@ jobs:
       - name: Build the function
         working-directory: site
         run: >-
-          uv run python app.py generate lambda-zip --arch arm64 --runtime python3.15 --no-layer
-          --compress public --compress Pyjoyment/resources/public
+          uv run python app.py generate lambda-zip --arch arm64 --runtime python3.15 --function-only
+          --compress public
           --compress-encoding br --compress-encoding gzip
 
       - name: Upload the function

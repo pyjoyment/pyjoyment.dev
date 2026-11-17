@@ -53,7 +53,6 @@
     % if current.get('summary'):
       <p><%= current['summary'] %></p>
     % end
-    %# Pyjoyment 0.3.0 takes no % else: right after the % end of a loop in an if, pyjoyment/Pyjoyment#575, until 0.4.0
     % if not current['tabs']:
       <p class="soon">Coming soon.</p>
     % else:

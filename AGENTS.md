@@ -93,13 +93,9 @@ The examples are scripts, and ruff checks them with the exceptions of the
 scripts of `Pyjoyment.Lite` and of the tests, but pyright does not, with
 `ignore` of `pyrightconfig.json`, as they import libraries that the
 environment of `site/` does not have, as Django, Flask, Pyjo-GCP or Pyjo-MCP.
-The site runs on the Pyjoyment of `uv.lock`, a revision of main, for the
-precompressed static files, until a release has them, while the examples,
-which the site shows and does not run, may describe the next release, as
-0.4.0, before it, and are reviewed again after it. A template of the site
-takes no `% else:` right after the `% end` of a loop in an `if`, which
-Pyjoyment 0.3.0 fails on (pyjoyment/Pyjoyment#575, fixed for 0.4.0), so the
-template of the page puts the branch without a loop first.
+The site runs on the Pyjoyment of `uv.lock`, a release of PyPI, while the
+examples, which the site shows and does not run, may describe the next
+release before it.
 A file whose real name is hidden, as `.mcp.json`, is in the directory of its
 scenario without its dot, with its real name as its `title` in the catalog,
 as `list_tree` and `generate lambda-zip` leave the hidden files out. `t/examples.py` compiles each
@@ -125,30 +121,27 @@ an API that posts needs another way before the distribution takes `POST`.
 
 ## Building
 
-`generate lambda-zip --no-layer` writes `site/dist/function.zip`, the
-application with the Pyjoyment of `uv.lock`, a revision of main, which no
-public layer of Pyjoyment-Lambda-Layers has, for the runtime of Python of
-Lambda, as the workflow Build does:
+`generate lambda-zip --function-only` writes `site/dist/function.zip`, the
+application without Pyjoyment, which the public layer of
+Pyjoyment-Lambda-Layers of the Pyjoyment of `uv.lock` gives the function, for
+the runtime of Python of Lambda, as the workflow Build does:
 
 ```sh
-mise exec -- uv run --directory site python app.py generate lambda-zip --arch arm64 --runtime python3.15 --no-layer --compress public --compress Pyjoyment/resources/public --compress-encoding br --compress-encoding gzip
+mise exec -- uv run --directory site python app.py generate lambda-zip --arch arm64 --runtime python3.15 --function-only --compress public --compress-encoding br --compress-encoding gzip
 ```
 
 The runtime, `python3.15`, and the architecture, `arm64`, are the same in the
 workflow and in `tofu/`. `--compress` writes the precompressed variants of
 the static files, which `Pyjoyment.Static` serves with
-`Vary: Accept-Encoding`, of `public/` and of the resources of Pyjoyment, as
-the logo, which are in the function with Pyjoyment. `--compress-encoding`
+`Vary: Accept-Encoding`, of `public/`. The resources of Pyjoyment, as the
+logo, are in the layer, which has no precompressed variants, so CloudFront
+compresses them with its `compress`. `--compress-encoding`
 takes `.br` and `.gz` only, as CloudFront forwards `Accept-Encoding`
 normalized to `br` and `gzip`, so a `.zst` would never be served through it.
 The `.br` needs the command `brotli`, which the workflow installs if the
 runner has none, and without which the generator fails, instead of giving
 `.gz` to a client of brotli, which CloudFront, whose `compress` takes only a
 response without `Content-Encoding`, does not compress again.
-
-After a release of Pyjoyment with the precompressed static files and its
-layers, `uv.lock` takes it from PyPI, and the build may take
-`--function-only` again, with the layer instead of Pyjoyment in the function.
 
 ## Deployment
 
@@ -168,11 +161,9 @@ the group `dev` of `site/`, which `uv export --no-dev` of
 environment, which `aws-actions/configure-aws-credentials` sets, or of a
 profile.
 
-A `function.zip` with Pyjoyment of its own, of `--no-layer`, goes first, and
-the function loses its layer after, as the code before needs it. For a
-`function.zip` of `--function-only`, it gives the function the layer of the
-Pyjoyment of `uv.lock`, by its name in the index of the latest release of
-Pyjoyment-Lambda-Layers, as `pyjoyment-0_3_0-python3_15` for the runtime of
+For a `function.zip` of `--function-only`, `deploy.py` gives the function the
+layer of the Pyjoyment of `uv.lock`, by its name in the index of the latest
+release of Pyjoyment-Lambda-Layers, as `pyjoyment-0_4_0-python3_15` for the runtime of
 the function, not the alias of the latest Pyjoyment, `pyjoyment-python3_15`,
 which the first apply of `tofu/` takes: a bump of Pyjoyment in `uv.lock`
 before its layers are released
@@ -182,6 +173,10 @@ older Pyjoyment fails too. The layer goes before the code, as the code of a
 newer Pyjoyment needs its layer, where a newer layer runs the code of the one
 before, and each update waits until `LastUpdateStatus` of the function is
 `Successful`, as Lambda takes no other update before.
+
+A `function.zip` with Pyjoyment of its own, of `--no-layer`, as of a revision
+of main before its release, which no layer has, goes first, and the function
+loses its layer after, as the code before needs it.
 
 The deployment invalidates `/*` of the distribution at last, the files of
 `public/` that CloudFront keeps for an hour, which is one path of the free
