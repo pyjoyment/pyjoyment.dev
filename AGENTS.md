@@ -74,6 +74,20 @@ A swap of `<main>` is a change of the history of the browser, not a load of a
 page, which the container of GTM counts as a page view only with a trigger of
 the changes of the history, or the enhanced measurement of GA4 that has one.
 
+Each response, of a page, of a static file and of an error alike, has
+`Content-Security-Policy` and `Permissions-Policy` of the hook
+`after_dispatch` of `site/app.py`, which CloudFront keeps with the response.
+The policy takes no inline script nor style, so the snippet of GTM is
+`public/js/gtm.js`, loaded before the async `gtm.js`, and a template takes no
+`<script>` without `src`, no `<style>` and no attribute `style`, which the tests
+check. Its hosts of Google are those that Google gives for GTM with GA4: a tag
+of the container of another kind, as a Custom HTML or Google Signals, needs
+its hosts too, or it is blocked. The policy is the same in every mode, so that
+a violation of the site is seen in development, where GTM is not loaded.
+`Permissions-Policy` disables the features that the site does not use, but
+`clipboard-write` of the button Copy, and names only the features that Chrome
+knows, as it logs an error for each other one.
+
 The examples are scripts, and ruff checks them with the exceptions of the
 scripts of `Pyjoyment.Lite` and of the tests, but pyright does not, with
 `ignore` of `pyrightconfig.json`, as they import libraries that the

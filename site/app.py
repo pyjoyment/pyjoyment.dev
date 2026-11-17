@@ -177,6 +177,63 @@ def cache_control(c):
 # A function, not a value, as the mode of -m is set after this script is loaded; Pyjoyment.Static gives it to a 304 too
 app.static.cache_control = lambda c, rel: cache_control(c)
 
+# The files of the site, without an inline script or style, and Google Tag Manager with Google Analytics 4, whose hosts
+# are those that Google gives for a Content Security Policy; the same policy in every mode, so that a violation of the
+# site is seen in development, where GTM is not loaded
+CONTENT_SECURITY_POLICY = '; '.join(
+    [
+        "default-src 'self'",
+        "script-src 'self' https://*.googletagmanager.com",
+        "img-src 'self' https://img.shields.io https://*.google-analytics.com https://*.googletagmanager.com",
+        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+        "object-src 'none'",
+        "base-uri 'none'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+    ]
+)
+
+# The features that the site does not use, but the clipboard of the button Copy; only those that the browsers know, as
+# Chrome logs an error for each feature that it does not know
+PERMISSIONS_POLICY = ', '.join(
+    [
+        'clipboard-write=(self)',
+        *(
+            f'{feature}=()'
+            for feature in (
+                'accelerometer',
+                'autoplay',
+                'bluetooth',
+                'browsing-topics',
+                'camera',
+                'display-capture',
+                'encrypted-media',
+                'fullscreen',
+                'geolocation',
+                'gyroscope',
+                'hid',
+                'magnetometer',
+                'microphone',
+                'midi',
+                'payment',
+                'picture-in-picture',
+                'publickey-credentials-get',
+                'screen-wake-lock',
+                'serial',
+                'usb',
+                'xr-spatial-tracking',
+            )
+        ),
+    ]
+)
+
+
+# Every response, of a page, of a file of public/ and of an error alike, which CloudFront keeps with its headers
+@hook('after_dispatch')
+def security_headers(c):
+    c.res.headers.content_security_policy = CONTENT_SECURITY_POLICY
+    c.res.headers.header('Permissions-Policy', PERMISSIONS_POLICY)
+
 
 @get('/')
 def index(c):

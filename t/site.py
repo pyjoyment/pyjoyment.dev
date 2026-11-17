@@ -12,14 +12,26 @@ import os
 SITE = curfile().dirname().sibling('site')
 
 
+def secure(t: Pyjo.Test.Pyjo.object) -> None:
+    t.header_like(
+        'Content-Security-Policy', r"^default-src 'self'; script-src 'self' https://\*\.googletagmanager\.com;"
+    )
+    t.header_like('Content-Security-Policy', r"; frame-ancestors 'none'$")
+    t.header_like('Permissions-Policy', r'^clipboard-write=\(self\), accelerometer=\(\),.* camera=\(\),')
+
+
 def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
     with subtest('Page'):
         t.get_ok('/').status_is(200).content_type_like(r'^text/html').header_is('Cache-Control', cache)
         gtm = 'head script[src="https://www.googletagmanager.com/gtm.js?id=GTM-5NGTPTM6"]'
         if analytics:
-            t.element_exists(gtm).content_like(r"gtag\('js', new Date\(\)\);")
+            t.element_exists(gtm).element_exists(gtm.replace('head ', 'head script[src="/js/gtm.js"]:not([async]) + '))
         else:
-            t.element_exists_not(gtm).content_unlike(r'gtag')
+            t.element_exists_not(gtm).element_exists_not('script[src="/js/gtm.js"]')
+
+        # No inline script nor style, which the Content-Security-Policy does not take
+        t.element_exists_not('script:not([src])').element_exists_not('style, [style]')
+        secure(t)
         t.element_exists('h1 img[alt="Pyjoyment"]')
         t.text_is('.tagline', 'Glue, run and ship Python applications. Zero dependencies.')
         t.text_is('.feature[href="/http"]', 'HTTP').text_is('.role[href="/server"]', 'Server')
@@ -55,6 +67,7 @@ def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
         t.text_is('#tab-0', 'app.py').text_is('#tab-1', 'build.sh')
         t.text_like('#panel-0 code.language-python', r'handler = app\.start\(\)')
         t.element_exists('#panel-1 code.language-bash')
+        t.element_exists_not('script:not([src])').element_exists_not('style, [style]')
 
         # The actions of a file: the clipboard, and its source on GitHub
         t.text_is('#panel-0 .copy', 'Copy')
@@ -74,6 +87,7 @@ def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
     with subtest('Dynamic'):
         t.get_ok('/hello').status_is(200).json_is('/hello', 'World').header_is('Cache-Control', None)
         t.get_ok('/hello/Sara').status_is(200).json_is('/hello', 'Sara')
+        secure(t)
 
     with subtest('Static'):
         t.get_ok('/css/site.css').status_is(200).content_type_like(r'^text/css')
@@ -82,12 +96,18 @@ def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
         # A revalidation keeps the Cache-Control of the file
         etag = t.tx.res.headers.etag
         t.get_ok('/css/site.css', {'If-None-Match': etag}).status_is(304).header_is('Cache-Control', cache)
+        secure(t)
 
         # The files of Pyjoyment, as the logo, too
         t.get_ok('/pyjo/logo-black-4x.svg').status_is(200).header_is('Cache-Control', cache)
+        secure(t)
+
+        # The snippet of Google Tag Manager, in a file of its own for the Content-Security-Policy
+        t.get_ok('/js/gtm.js').status_is(200).content_like(r'gtag\("js", new Date\(\)\);')
 
     with subtest('Not found'):
         t.get_ok('/missing').status_is(404)
+        secure(t)
 
 
 with subtest('Server'):
