@@ -86,7 +86,8 @@ its hosts too, or it is blocked. The policy is the same in every mode, so that
 a violation of the site is seen in development, where GTM is not loaded.
 `Permissions-Policy` disables the features that the site does not use, but
 `clipboard-write` of the button Copy, and names only the features that Chrome
-knows, as it logs an error for each other one.
+knows, as it logs an error for each other one, and a feature that Chrome
+removes, as `browsing-topics` of the Topics API, goes too.
 
 The examples are scripts, and ruff checks them with the exceptions of the
 scripts of `Pyjoyment.Lite` and of the tests, but pyright does not, with
