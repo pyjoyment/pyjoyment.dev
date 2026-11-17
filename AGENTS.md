@@ -299,17 +299,13 @@ without flags, by its definition in `.trunk/trunk.yaml`, as it ignores
 `space_redirects`. A placeholder of an example that the shell would read as a
 redirection, as `<url-id>`, is quoted, or shfmt splits it.
 
-tflint checks `tofu/` with the rules of its plugins `terraform` and `aws`,
-from `.tflint.hcl` in the root of the repository, where the extensions of the
-editors find it, which the definition of tflint in `.trunk/trunk.yaml` names
-in `TFLINT_CONFIG_FILE`. `tflint --init` downloads the plugins from the
-releases of GitHub, whose API limits the requests without a token, so Trunk
-Check of CI has `GITHUB_TOKEN`, and a local run that fails with the limit of
-the API takes the one of `gh`:
-
-```sh
-GITHUB_TOKEN=$(gh auth token) trunk check --all --no-fix
-```
+tflint is disabled in Trunk: its init of the plugins in the cache of Trunk
+failed in CI with `text file busy`, and `tofu/` is a few resources, reviewed
+with their plan. It would need its configuration in the root of the
+repository again, `.tflint.hcl`, which a definition of tflint in
+`.trunk/trunk.yaml` names in `TFLINT_CONFIG_FILE`, and `GITHUB_TOKEN` in
+Trunk Check, as `tflint --init` downloads the plugins from the releases of
+GitHub, whose API limits the requests without a token.
 
 Renovate does not bump the providers of `tofu/` nor its `required_version`,
 as the configuration is applied by hand: the providers and their lock are
