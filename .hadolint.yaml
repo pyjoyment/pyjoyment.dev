@@ -1,0 +1,5 @@
+# shellcheck of the RUN instructions cannot follow a file that a RUN sources,
+# which is in the image only
+ignored:
+  - SC1090 # ShellCheck can't follow non-constant source. Use a directive to specify location.
+  - SC1091 # Not following: file was not specified as input (see shellcheck -x).

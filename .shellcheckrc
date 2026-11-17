@@ -1,0 +1,13 @@
+enable=all
+source-path=SCRIPTDIR
+# The scripts of the examples are commands to type in bash, without a shebang
+shell=bash
+
+# The examples source the files that their commands make, as .venv/bin/activate
+disable=SC1091 # Not following: .venv/bin/activate: openBinaryFile: does not exist (No such file or directory)
+# The examples use the variables of the environment of the user, as AWS_ACCESS_KEY_ID
+disable=SC2154 # AWS_ACCESS_KEY_ID is referenced but not assigned.
+# An exit after a cd of a command typed in a shell would close the shell
+disable=SC2164 # Use 'cd ... || exit' or 'cd ... || return' in case cd fails.
+disable=SC2250 # Prefer putting braces around variable references even when not strictly required.
+disable=SC2312 # Consider invoking this command separately to avoid masking its return value (or use '|| true' to ignore).

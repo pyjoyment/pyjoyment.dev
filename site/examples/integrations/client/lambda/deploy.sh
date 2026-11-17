@@ -12,4 +12,4 @@ aws lambda create-function-url-config --function-name answer --auth-type AWS_IAM
 
 # The words as they come, a request signed with the credentials of the environment
 curl -N --aws-sigv4 aws:amz:eu-central-1:lambda --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
-  -H "X-Amz-Security-Token: $AWS_SESSION_TOKEN" https://<url-id>.lambda-url.eu-central-1.on.aws/answer
+  -H "X-Amz-Security-Token: $AWS_SESSION_TOKEN" "https://<url-id>.lambda-url.eu-central-1.on.aws/answer"

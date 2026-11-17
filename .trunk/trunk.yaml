@@ -35,21 +35,20 @@ downloads:
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
 lint:
   definitions:
-    # tflint runs in the directory of the files of OpenTofu, where it looks for
-    # its configuration, which is in the root of the repository, where the
-    # extensions of the editors find it; the other variables are those of the
-    # plugin, as a definition replaces its list
-    - name: tflint
-      environment:
-        - name: PATH
-          list: ["${linter}"]
-        - name: TFLINT_PLUGIN_DIR
-          value: ${shared_cachedir}
-        - name: GITHUB_TOKEN
-          value: ${env.GITHUB_TOKEN}
-          optional: true
-        - name: TFLINT_CONFIG_FILE
-          value: ${workspace}/.tflint.hcl
+    # shfmt ignores .editorconfig when it is given any formatting flag, and
+    # the plugin passes `-s`, so it would indent with tabs regardless of
+    # indent_style. Run it without flags; `simplify = true` in .editorconfig
+    # keeps the simplification.
+    - name: shfmt
+      commands:
+        - name: format
+          output: shfmt
+          run: shfmt -w ${target}
+          success_codes: [0, 1]
+          cache_results: true
+          formatter: true
+          batch: true
+          in_place: true
     # Biome formats and lints CSS, HTML, JavaScript, JSON, Markdown and YAML,
     # with biome.jsonc. parse_regex is matched against the whole output of a
     # batch, so `^` needs `(?m)` to match at every line; without it Trunk
@@ -96,7 +95,9 @@ lint:
           run_from: ${root_or_parent_with(biome.jsonc)}
       run_timeout: 1m
   enabled:
-    - tflint@0.66.0
+    - hadolint@2.15.1
+    - shellcheck@0.11.0
+    - shfmt@3.14.1
     - actionlint@1.17.1
     # Renovate bumps it, and Biome Migrate migrates biome.jsonc on its branch;
     # the ! keeps it from trunk upgrade
@@ -104,7 +105,7 @@ lint:
     - git-diff-check
     - pyright@1.1.414
     # The format command of ruff is disabled in the plugin by default
-    - ruff@0.17.4:
+    - ruff@0.17.5:
         commands:
           - lint
           - format
@@ -135,6 +136,10 @@ lint:
     # renovate: validates the Renovate configuration; Renovate validates it
     # itself on every run, and the linter is a heavy npm package
     - renovate
+    # tflint: lints the code of OpenTofu; its init of the plugins in the cache
+    # of Trunk fails at times in CI with "text file busy", and the code is a
+    # few resources, reviewed with its plan
+    - tflint
     # trivy: scanner for containers, infrastructure as code and dependencies;
     # there are no containers, and the rest is what checkov would scan
     - trivy

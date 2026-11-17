@@ -10,3 +10,9 @@ trim_trailing_whitespace = true
 
 [*.{css,ep,hcl,html,js,json,md,tf,tfvars,tofu,toml,yaml,yml}]
 indent_size = 2
+
+[*.sh]
+indent_size = 2
+simplify = true
+space_redirects = true
+switch_case_indent = true

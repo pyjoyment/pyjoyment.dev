@@ -2,7 +2,7 @@ python3 -m venv .venv
 .venv/bin/pip install Pyjoyment
 
 # The Python of the virtualenv runs the script, and its commands are in .venv/bin
-.venv/bin/python app.py get /   # {"python":"\/srv\/myapp\/.venv\/bin\/python"}
+.venv/bin/python app.py get / # {"python":"\/srv\/myapp\/.venv\/bin\/python"}
 .venv/bin/pyjo version
 .venv/bin/pyjo-prove -l -r t
 
