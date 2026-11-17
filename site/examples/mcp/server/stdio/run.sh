@@ -1,6 +1,6 @@
 # A message of JSON-RPC on each line of the standard input, and its response on a line of the standard output, until
 # the end of the input
-jq -c . <<'EOF' | python app.py stdio
+jq -c . << 'EOF' | python app.py stdio
 {
   "jsonrpc": "2.0", "id": 1, "method": "tools/call",
   "params": {
