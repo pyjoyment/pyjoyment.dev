@@ -3,19 +3,14 @@ name = "pyjoyment-dev"
 version = "0"
 description = "The website of Pyjoyment, pyjoyment.dev."
 requires-python = ">=3.12"
-# The Pyjoyment of the tests, of the build and of the function, which has it in its ZIP
-dependencies = ["Pyjoyment>=0.3.0"]
+# The Pyjoyment of the tests, of the build and of the function
+dependencies = ["Pyjoyment>=0.4.0"]
 
 # Not a package: the application is the script app.py, which "generate lambda-zip" puts into the function with the other
 # files of this directory
 [tool.uv]
 package = false
 
-# Pyjoyment of main, for the precompressed static files of "generate lambda-zip --compress" and of Pyjoyment.Static,
-# until a release has them
-[tool.uv.sources]
-Pyjoyment = { git = "https://github.com/pyjoyment/Pyjoyment", rev = "2eac77127d611b703fe8f852a23589883b0c2da0" }
-
 # The Pyjo-AWS of deploy.py, which "uv export --no-dev" of "generate lambda-zip" leaves out of the function
 [dependency-groups]
-dev = ["Pyjo-AWS>=0.1.0"]
+dev = ["Pyjo-AWS>=0.1.1"]
