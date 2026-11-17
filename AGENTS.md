@@ -286,6 +286,19 @@ keeps it from `trunk upgrade`, and which Renovate bumps: the repository has no
 the files on the branch of Renovate, as in Pyjoyment, whose `AGENTS.md` says
 why.
 
+shellcheck and shfmt check the scripts of the shell, and hadolint the
+`Dockerfile` of the examples, with `.shellcheckrc`, `.editorconfig` and
+`.hadolint.yaml` in the root of the repository, where the extensions of the
+editors find them, not in `.trunk/configs`, where `trunk upgrade` puts the
+configuration of a linter that it enables. The scripts of the examples are
+commands to type in bash, without a shebang, so `.shellcheckrc` names the
+shell and leaves out the checks that do not fit such commands, as a `cd`
+without `|| exit`, whose exit would close the shell of the user. shfmt runs
+without flags, by its definition in `.trunk/trunk.yaml`, as it ignores
+`.editorconfig` with any of them, and keeps the space of `> file` with
+`space_redirects`. A placeholder of an example that the shell would read as a
+redirection, as `<url-id>`, is quoted, or shfmt splits it.
+
 tflint checks `tofu/` with the rules of its plugins `terraform` and `aws`,
 from `.tflint.hcl` in the root of the repository, where the extensions of the
 editors find it, which the definition of tflint in `.trunk/trunk.yaml` names
