@@ -55,7 +55,7 @@ def updated(aws: Pyjo.AWS.Client.object, function: str) -> dict[str, Any]:
     raise Pyjo.Exception.new(f'The update of {function} is not done after two minutes')
 
 
-# The layer of the Pyjoyment of uv.lock, which the generator left out of the function, as pyjoyment-0_4_0-python3_15,
+# The layer of the Pyjoyment of uv.lock, which the generator left out of the function, as pyjoyment-0_5_0-python3_15,
 # not the alias of the latest Pyjoyment, so that a Pyjoyment without its layer yet fails the deployment
 def layer(ua: Pyjo.UserAgent.object, runtime: str) -> str:
     version = importlib.metadata.version('Pyjoyment')

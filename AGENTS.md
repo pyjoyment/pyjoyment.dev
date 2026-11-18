@@ -163,7 +163,7 @@ profile.
 
 For a `function.zip` of `--function-only`, `deploy.py` gives the function the
 layer of the Pyjoyment of `uv.lock`, by its name in the index of the latest
-release of Pyjoyment-Lambda-Layers, as `pyjoyment-0_4_0-python3_15` for the runtime of
+release of Pyjoyment-Lambda-Layers, as `pyjoyment-0_5_0-python3_15` for the runtime of
 the function, not the alias of the latest Pyjoyment, `pyjoyment-python3_15`,
 which the first apply of `tofu/` takes: a bump of Pyjoyment in `uv.lock`
 before its layers are released
