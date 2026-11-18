@@ -74,10 +74,16 @@ A swap of `<main>` is a change of the history of the browser, not a load of a
 page, which the container of GTM counts as a page view only with a trigger of
 the changes of the history, or the enhanced measurement of GA4 that has one.
 
-Each response, of a page, of a static file and of an error alike, has
-`Content-Security-Policy` and `Permissions-Policy` of the hook
-`after_dispatch` of `site/app.py`, which CloudFront keeps with the response.
-The policy takes no inline script nor style, so the snippet of GTM is
+Each response, of a page, of a static file and of an error alike, has the
+headers of the plugin `SecurityHeaders` of `site/app.py`, which CloudFront
+keeps with the response: `Content-Security-Policy` and `Permissions-Policy`
+of the site, `Strict-Transport-Security` of a year for the host alone, as
+CloudFront redirects HTTP to HTTPS anyway, and the defaults of the plugin.
+The policy has no reports, as the distribution takes no `POST`. The page of
+not found of Pyjoyment has its inline script and style with the nonce of the
+plugin, which gives the response `Cache-Control: private`. The site has no
+inline script nor style, whose nonce would keep its pages out of the cache:
+the snippet of GTM is
 `public/js/gtm.js`, loaded before the async `gtm.js`, and a template takes no
 `<script>` without `src`, no `<style>` and no attribute `style`, which the tests
 check. Its hosts of Google are those that Google gives for GTM with GA4: a tag
