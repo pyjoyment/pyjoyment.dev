@@ -70,6 +70,12 @@ scenarios:
         files:
           - name: MyPlugins/Timing.py
           - name: app.py
+      - id: security-headers
+        title: Security headers
+        summary: HSTS, a Content Security Policy tried out with the reports of the browsers, a nonce of inline scripts and Permissions-Policy
+      - id: cors
+        title: Cross-origin resource sharing
+        summary: An API that a frontend on another site reads with the cookies of its session
     client:
       - id: non-blocking
         title: Non-blocking requests of an action
