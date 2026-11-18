@@ -5,6 +5,7 @@ from Pyjo.File import curfile
 from Pyjo.Test import *
 
 import os
+import re
 
 
 # The application of site/, as a server of its own, and as the event function of the Function URL behind CloudFront,
@@ -14,10 +15,13 @@ SITE = curfile().dirname().sibling('site')
 
 def secure(t: Pyjo.Test.Pyjo.object) -> None:
     t.header_like(
-        'Content-Security-Policy', r"^default-src 'self'; script-src 'self' https://\*\.googletagmanager\.com;"
+        'Content-Security-Policy',
+        r"^default-src 'self'(?: 'nonce-[^']+')?; script-src 'self' https://\*\.googletagmanager\.com(?: 'nonce-[^']+')?;",
     )
     t.header_like('Content-Security-Policy', r"; frame-ancestors 'none'$")
     t.header_like('Permissions-Policy', r'^clipboard-write=\(self\), accelerometer=\(\),.* camera=\(\),')
+    t.header_is('X-Content-Type-Options', 'nosniff').header_is('Referrer-Policy', 'strict-origin-when-cross-origin')
+    t.header_is('Cross-Origin-Opener-Policy', 'same-origin')
 
 
 def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
@@ -81,7 +85,8 @@ def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
         # The order and the titles of the tabs of the catalog
         t.get_ok('/mcp/cli/claude').status_is(200).text_is('#tab-0', 'claude.sh').text_is('#tab-1', '.mcp.json')
 
-        t.get_ok('/http/server/missing').status_is(404).header_is('Cache-Control', None)
+        # The page of not found of Pyjoyment, whose inline script and style have the nonce, which no cache keeps
+        t.get_ok('/http/server/missing').status_is(404).header_is('Cache-Control', 'private')
         t.get_ok('/missing/server').status_is(404)
 
     with subtest('Dynamic'):
@@ -108,11 +113,17 @@ def check(t: Pyjo.Test.Pyjo.object, cache: str, analytics: bool) -> None:
     with subtest('Not found'):
         t.get_ok('/missing').status_is(404)
         secure(t)
+        nonce = t.tx.res.dom().at('style[nonce]').attr('nonce')
+        t.header_like('Content-Security-Policy', rf"^default-src 'self' 'nonce-{re.escape(nonce)}';")
 
 
 with subtest('Server'):
     # Nothing is kept in development
-    check(Pyjo.Test.Pyjo.new(SITE.child('app.py')), 'no-cache', analytics=False)
+    t = Pyjo.Test.Pyjo.new(SITE.child('app.py'))
+    check(t, 'no-cache', analytics=False)
+
+    # No HSTS over HTTP
+    t.get_ok('/').status_is(200).header_exists_not('Strict-Transport-Security')
 
 if os.name == 'nt':
     skip('Lambda functions need pipes that the event loop watches, which Windows does not have')
@@ -120,6 +131,10 @@ else:
     with subtest('Function'):
         env = {'PYJO_MODE': 'production'}
         with Pyjo.App.Lambda.new(function='app.handler', task_root=SITE.to_str(), payload='2.0', env=env) as function:
-            check(Pyjo.Test.Pyjo.new(function), 'public, max-age=3600, s-maxage=604800', analytics=True)
+            t = Pyjo.Test.Pyjo.new(function)
+            check(t, 'public, max-age=3600, s-maxage=604800', analytics=True)
+
+            # HTTPS of the Function URL, which CloudFront takes
+            t.get_ok('/').status_is(200).header_is('Strict-Transport-Security', 'max-age=31536000')
 
 done_testing()
